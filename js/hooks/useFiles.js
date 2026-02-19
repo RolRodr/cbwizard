@@ -77,6 +77,14 @@ export function registerFileListeners() {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validate that the selected file is a CSV
+        const isCSV = file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv';
+        if (!isCSV) {
+            alert('Please select a CSV file (.csv).');
+            e.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = async (evt) => {
             const content = evt.target.result;

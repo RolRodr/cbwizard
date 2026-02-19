@@ -79,8 +79,30 @@ export function enableDropZone(inputEl, { label = 'Drop files here', accept } = 
 
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            // Transfer dropped files to the input element
-            inputEl.files = files;
+            // Validate dropped files against the input's accept attribute
+            const acceptAttr = inputEl.getAttribute('accept');
+            if (acceptAttr) {
+                const acceptedTypes = acceptAttr.split(',').map(t => t.trim().toLowerCase());
+                const validFiles = Array.from(files).filter(f => {
+                    const ext = '.' + f.name.split('.').pop().toLowerCase();
+                    const mime = f.type.toLowerCase();
+                    return acceptedTypes.some(a => {
+                        if (a.startsWith('.')) return ext === a;           // extension match
+                        if (a.endsWith('/*')) return mime.startsWith(a.replace('/*', '/'));  // wildcard MIME
+                        return mime === a;                                  // exact MIME
+                    });
+                });
+                if (validFiles.length === 0) {
+                    alert('That file type is not accepted. Please drop a valid file (' + acceptAttr + ').');
+                    return;
+                }
+                // Build a DataTransfer with only the valid files
+                const dt = new DataTransfer();
+                validFiles.forEach(f => dt.items.add(f));
+                inputEl.files = dt.files;
+            } else {
+                inputEl.files = files;
+            }
             // Trigger the change event so existing handlers fire
             inputEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
