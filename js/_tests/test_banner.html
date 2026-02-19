@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Banner</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        #csv-preview {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test Banner Rendering</h1>
+
+    <!-- Mock UI Elements -->
+    <div id="csv-preview">
+        <table>
+            <thead>
+                <tr>
+                    <th>col1</th>
+                    <th>col2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>val1</td>
+                    <td>val2</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Script to run test -->
+    <script type="module">
+        import { renderValidationBanner } from '../ui.js';
+
+        // Mock data
+        const header = ['objectid', 'title', 'filename'];
+        const validationReport = new Map();
+
+        // Add errors
+        // Row 1 (index 0) is header
+        // Row 2 (index 1) is first data row
+
+        // key format: "rowIndex,colIndex"
+        // simulating error in Row 2, col 0 (objectid)
+        validationReport.set('1,0', { type: 'error', msg: 'Missing objectid' });
+
+        // simulating error in Row 3, col 2 (filename)
+        validationReport.set('2,2', { type: 'error', msg: 'Invalid filename' });
+
+        // Call the function
+        console.log('Rendering banner...');
+        renderValidationBanner(validationReport, header);
+
+        // Verify
+        const banner = document.getElementById('csv-validation-banner');
+        if (banner) {
+            console.log('Banner created successfully.');
+            const listItems = banner.querySelectorAll('li');
+
+            // Check content
+            // Row 1 in validationReport key is "1" -> File Line 2 (if header is 1).
+            // Our logic: lineNum = rowNum + 1.
+            // key "1,0" -> rowNum 1 -> lineNum 2.
+
+            const item1 = listItems[0].textContent;
+            const item2 = listItems[1].textContent;
+
+            console.log('Item 1:', item1); // Expected: objectid | Row 2 | Missing objectid
+            console.log('Item 2:', item2); // Expected: filename | Row 3 | Invalid filename
+
+            // Check if matches expected format
+            if (item1.includes('objectid | Row 2 | Missing objectid') &&
+                item2.includes('filename | Row 3 | Invalid filename')) {
+                console.log('TEST PASS: Banner content correct.');
+                document.body.insertAdjacentHTML('beforeend', '<h2 style="color:green">TEST PASS</h2>');
+            } else {
+                console.error('TEST FAIL: Content mismatch.');
+                document.body.insertAdjacentHTML('beforeend', '<h2 style="color:red">TEST FAIL: Content mismatch</h2>');
+            }
+        } else {
+            console.error('TEST FAIL: Banner not found.');
+            document.body.insertAdjacentHTML('beforeend', '<h2 style="color:red">TEST FAIL: Banner not found</h2>');
+        }
+    </script>
+</body>
+
+</html>
