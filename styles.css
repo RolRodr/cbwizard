@@ -1035,16 +1035,33 @@ details.instructions li {
 
 
 /* ── 18. CSV Validation Cells ── */
+/* Patterns supplement colour so errors vs warnings are distinguishable
+   for colour-blind users (diagonal stripes = error, dots = warning). */
 
 td.cell-error {
-    background: #ffdce0;
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 4px,
+            rgba(208, 48, 64, 0.18) 4px,
+            rgba(208, 48, 64, 0.18) 6px
+        ),
+        #ffdce0;
     border: 2px solid #d03040 !important;
     position: relative;
     cursor: help;
 }
 
 td.cell-warning {
-    background: var(--warning-bg);
+    background:
+        radial-gradient(
+            circle,
+            rgba(154, 103, 0, 0.22) 1px,
+            transparent 1px
+        ),
+        var(--warning-bg);
+    background-size: 8px 8px;
     border: 2px solid #9a6700 !important;
     position: relative;
     cursor: help;
