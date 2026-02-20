@@ -1,12 +1,4 @@
-/**
- * Adds drag-and-drop capability to a file input element.
- * Creates a visible drop zone around the input area.
- *
- * @param {HTMLElement} inputEl - The file input element
- * @param {Object} options
- * @param {string} options.label - Text shown in the drop zone
- * @param {string} [options.accept] - Accepted MIME types (for validation hint only)
- */
+/** Wraps a file input with a drag-and-drop zone that supports file validation. */
 export function enableDropZone(inputEl, { label = 'Drop files here', accept } = {}) {
     if (!inputEl) return;
 
@@ -20,7 +12,7 @@ export function enableDropZone(inputEl, { label = 'Drop files here', accept } = 
     // Icon + label
     const icon = document.createElement('div');
     icon.className = 'drop-zone-icon';
-    icon.textContent = '📁';
+    icon.textContent = '';
 
     const text = document.createElement('div');
     text.className = 'drop-zone-text';

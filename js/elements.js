@@ -1,6 +1,7 @@
 // --- DOM Elements ---
 // Elements are accessed lazily via getters so they are queried after DOMContentLoaded.
 
+/** Returns an array of all wizard step DOM elements. */
 export function getSteps() {
     return [
         document.getElementById('step-0'), // Welcome

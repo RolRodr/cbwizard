@@ -4,7 +4,7 @@ import { saveState, clearState } from '../storage.js';
 import { githubRequest } from '../api.js';
 import { updateUI, showError, clearError } from '../ui.js';
 
-// --- Authentication Logic ---
+/** Validates the GitHub token, fetches user info, and updates app state. */
 export async function authenticate(token, isRestoring = false) {
     try {
         elements.connectBtn.disabled = true;
@@ -67,7 +67,7 @@ export async function authenticate(token, isRestoring = false) {
     }
 }
 
-// --- Auth Event Listeners ---
+/** Registers event listeners for login, confirm, cancel, and logout actions. */
 export function registerAuthListeners() {
     elements.authForm.addEventListener('submit', async (e) => {
         e.preventDefault();

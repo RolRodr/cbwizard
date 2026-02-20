@@ -3,11 +3,7 @@ import { githubRequest } from '../api.js';
 import { elements } from '../elements.js';
 import { parseCSV, renderCSVTable } from '../utils/csv.js';
 
-/**
- * Fetches _data/demo-metadata.csv from the user's forked repository,
- * parses it, and renders it as an HTML table in #demo-csv-table.
- * Safe to call multiple times — skips fetch if table is already populated.
- */
+/** Fetches and renders the demo-metadata.csv from the user's forked repository. */
 export async function loadDemoCSV() {
     const tableWrap = elements.demoCsvTableWrap;
     const loading = elements.demoCsvLoading;
@@ -37,7 +33,7 @@ export async function loadDemoCSV() {
     } catch (err) {
         if (loading) loading.classList.add('hidden');
         if (errorEl) {
-            errorEl.textContent = `ℹ️ Could not load demo data: ${err.message}`;
+            errorEl.textContent = `Could not load demo data: ${err.message}`;
             errorEl.classList.remove('hidden');
         }
     }

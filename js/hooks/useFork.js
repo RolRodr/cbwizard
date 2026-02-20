@@ -4,7 +4,7 @@ import { saveState } from '../storage.js';
 import { githubRequest } from '../api.js';
 import { updateUI, showError } from '../ui.js';
 
-// --- Fork Logic ---
+/** Forks a template repo, renames it if needed, and updates app state. */
 export async function handleFork(templateRepo, newName) {
     try {
         elements.forkBtn.disabled = true;
@@ -84,6 +84,7 @@ export async function handleFork(templateRepo, newName) {
     }
 }
 
+/** Polls the GitHub API until the forked repository is reachable. */
 async function pollForRepo(repoFullName, attempts = 0) {
     const maxAttempts = 20; // up to ~60 seconds
     if (attempts >= maxAttempts) throw new Error("Timed out waiting for GitHub to provision the repository. Please try again.");
@@ -98,12 +99,13 @@ async function pollForRepo(repoFullName, attempts = 0) {
     }
 }
 
+/** Displays a status message in the fork progress indicator. */
 function showForkStatus(msg) {
     elements.forkStatus.textContent = msg;
     elements.forkStatus.classList.remove('hidden');
 }
 
-// --- Fork Event Listeners ---
+/** Registers event listeners for the fork form and step-2 next button. */
 export function registerForkListeners() {
     elements.forkForm.addEventListener('submit', async (e) => {
         e.preventDefault();

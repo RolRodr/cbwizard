@@ -9,6 +9,7 @@
 
 let modalEl = null;
 
+/** Creates the modal DOM element and wires close/backdrop/escape listeners. */
 function buildModal() {
     if (modalEl) return;
 
@@ -25,12 +26,16 @@ function buildModal() {
             <h2 id="about-modal-title">About this Project</h2>
             <div class="about-modal-body">
                 <p>
-                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus arcu est, 
-                     tempor eu interdum efficitur, fringilla non eros. Fusce molestie, mi vitae ullamcorper egestas, 
-                     nunc risus malesuada elit, vestibulum dictum eros tortor nec lectus. Suspendisse convallis posuere lacus ac hendrerit. 
-                     Aliquam quis ligula venenatis, rutrum nulla eu, efficitur purus. Mauris fringilla maximus mi, ultricies consectetur justo faucibus vel. 
-                     Donec ultrices mauris vel convallis gravida. Praesent varius ullamcorper dui et finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. 
-                     Quisque sit amet sem laoreet eros hendrerit efficitur. Donec id molestie erat. 
+                    CollectionBuilder Wizard is a small project created by Rolando Rodriguez, Humanities Data Librarian
+                    at the University of North Carolina at Chapel Hill as a personal passionate project. Having used and taught
+                    CollectionBuilder for the last handful of years, Rolando found that digital humanists struggled with 
+                    the technical curve when they wanted to set up a digital exhibit quickly. In repsonse, he created this
+                    project to allow more digital humanists to get an guided start to using CollectionBuilder.
+                </p>
+                <p>
+                Some things to note about this project: It is written in HTML, CSS, and vanilla Javascript. It is open-source and
+                hosted via GitHub Pages. All data is stored via LocalStorage or IndexedDB on the client's browser. 
+                <a href="https://github.com/RolRodr/cbwizard" target="_blank">Click here to visit the repository</a>.
                 </p>
             </div>
         </div>
@@ -55,7 +60,7 @@ function buildModal() {
     });
 }
 
-/** Open the About modal */
+/** Opens the About modal and focuses the close button. */
 export function openAboutModal(e) {
     if (e) e.preventDefault();
     if (!modalEl) buildModal();
@@ -63,15 +68,12 @@ export function openAboutModal(e) {
     modalEl.querySelector('.about-modal-close').focus();
 }
 
-/** Close the About modal */
+/** Closes the About modal. */
 export function closeAboutModal() {
     if (modalEl) modalEl.classList.add('hidden');
 }
 
-/**
- * Call once at startup.
- * Lazily builds the modal DOM and wires the footer "About this project" link.
- */
+/** Initializes the About modal and wires footer/step-0 trigger links. */
 export function initAboutModal() {
     buildModal();
 

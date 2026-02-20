@@ -2,7 +2,7 @@
  * Shared CSV utilities used by useDemoCSV.js, useFiles.js, and ui.js.
  */
 
-/** Minimal RFC 4180-compliant CSV parser — handles quoted fields with commas. */
+/** Parses CSV text into a 2D array of rows and columns (RFC 4180 compliant). */
 export function parseCSV(text) {
     const rows = [];
     const lines = text.split(/\r?\n/);
@@ -28,19 +28,9 @@ export function parseCSV(text) {
     return rows;
 }
 
-/**
- * Parses csvText and renders a <thead>/<tbody> table into tableEl.
- * Clears any existing content first. No-ops if tableEl is null or text is empty.
- */
 import { validateCSV } from '../validation.js';
 
-/**
- * Parses csvText and renders a <thead>/<tbody> table into tableEl.
- * Clears any existing content first. No-ops if tableEl is null or text is empty.
- * @param {string} csvText
- * @param {HTMLElement} tableEl
- * @param {boolean} shouldValidate - If true, runs validation logic and styles cells.
- */
+/** Parses CSV text, renders it as an HTML table, and optionally validates cells. */
 export function renderCSVTable(csvText, tableEl, shouldValidate = true) {
     if (!tableEl) return;
     tableEl.innerHTML = '';

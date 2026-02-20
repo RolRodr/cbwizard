@@ -1,6 +1,6 @@
 import { STATE } from './constants.js';
 
-// --- GitHub API Wrapper ---
+/** Sends an authenticated request to the GitHub API and returns the parsed JSON response. */
 export async function githubRequest(endpoint, method = 'GET', body = null, token = STATE.token) {
     if (!token) throw new Error("No access token provided.");
 
@@ -31,10 +31,7 @@ export async function githubRequest(endpoint, method = 'GET', body = null, token
     return response.json();
 }
 
-/**
- * Fetch all repositories for the authenticated user.
- * Handles pagination to get all repos.
- */
+/** Fetches all repositories for the authenticated user, handling pagination. */
 export async function fetchUserRepos(token = STATE.token) {
     let repos = [];
     let page = 1;
@@ -58,27 +55,20 @@ export async function fetchUserRepos(token = STATE.token) {
     return repos;
 }
 
-/**
- * Fetch README content for a repository.
- */
+/** Fetches the README content for a repository. */
 export async function getRepoReadme(owner, repo, token = STATE.token) {
     // Try to get README
     // GET /repos/{owner}/{repo}/readme
     return githubRequest(`/repos/${owner}/${repo}/readme`, 'GET', null, token);
 }
 
-/**
- * Fetch contents of a repository path.
- */
+/** Fetches the contents of a repository at the given path. */
 export async function getRepoContents(owner, repo, path = '', token = STATE.token) {
     // GET /repos/{owner}/{repo}/contents/{path}
     return githubRequest(`/repos/${owner}/${repo}/contents/${path}`, 'GET', null, token);
 }
 
-/**
- * Enable GitHub Pages on the repository using the main branch.
- * If Pages is already enabled, this is a no-op (catches 409).
- */
+/** Enables GitHub Pages on the repository using the main branch (no-op if already enabled). */
 export async function enableGitHubPages(owner, repo, token = STATE.token) {
     let alreadyExists = false;
 
@@ -129,9 +119,7 @@ export async function enableGitHubPages(owner, repo, token = STATE.token) {
     return alreadyExists ? { alreadyEnabled: true } : {};
 }
 
-/**
- * Update (PUT) a file in the repository.
- */
+/** Creates or updates a file in the repository via the GitHub Contents API. */
 export async function updateRepoFile(owner, repo, path, content, message, token = STATE.token) {
     // First get the file's SHA if it exists
     let sha = null;

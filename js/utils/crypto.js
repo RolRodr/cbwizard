@@ -19,9 +19,7 @@ const IV_LEN     = 12;   // 96-bit IV recommended for AES-GCM
 const SALT_LEN   = 16;
 const ITERATIONS = 100_000;
 
-/**
- * Derive an AES-GCM key from the page origin + a random salt.
- */
+/** Derives an AES-GCM key from the page origin and a random salt via PBKDF2. */
 async function deriveKey(salt) {
     const keyMaterial = await crypto.subtle.importKey(
         'raw',
@@ -40,9 +38,7 @@ async function deriveKey(salt) {
     );
 }
 
-/**
- * Encrypt a plaintext token → Base-64 string  (salt ‖ iv ‖ ciphertext).
- */
+/** Encrypts a plaintext token into a Base64 string (salt + IV + ciphertext). */
 export async function encryptToken(plaintext) {
     const salt = crypto.getRandomValues(new Uint8Array(SALT_LEN));
     const iv   = crypto.getRandomValues(new Uint8Array(IV_LEN));
@@ -63,10 +59,7 @@ export async function encryptToken(plaintext) {
     return btoa(String.fromCharCode(...packed));
 }
 
-/**
- * Decrypt a Base-64 blob back to the plaintext token.
- * Returns `null` if decryption fails (corrupt / wrong origin).
- */
+/** Decrypts a Base64 blob back to the plaintext token, or returns null on failure. */
 export async function decryptToken(base64Blob) {
     try {
         const packed = Uint8Array.from(atob(base64Blob), c => c.charCodeAt(0));

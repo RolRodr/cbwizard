@@ -7,10 +7,11 @@ import { parseCSV, renderCSVTable } from '../utils/csv.js';
 import { validateCsvFilename } from '../validation.js';
 import { enableDropZone } from '../utils/dragdrop.js';
 
-// --- File / CSV / Image Logic ---
+// ─────── File / CSV / Image Logic ───────
 
-// ── CSV upload to GitHub ──────────────────────────────────────────────────────
+// ─────── CSV upload to GitHub ───────
 
+/** Uploads a CSV file to the repository's _data/ directory. */
 async function uploadCSVToGitHub(csvContent, fileName) {
     const path = `_data/${fileName}`;
     const base64Content = btoa(unescape(encodeURIComponent(csvContent)));
@@ -34,8 +35,9 @@ async function uploadCSVToGitHub(csvContent, fileName) {
     return path;
 }
 
-// ── Image upload to GitHub ────────────────────────────────────────────────────
+// ─────── Image upload to GitHub ───────
 
+/** Uploads a single media file to the repository's objects/ directory. */
 async function uploadMediaToGitHub(file) {
     const { content, path, name } = file;
 
@@ -58,14 +60,16 @@ async function uploadMediaToGitHub(file) {
     return path;
 }
 
-// ── Event listeners ───────────────────────────────────────────────────────────
+// ─────── Event listeners ───────
 
+/** Deletes a media file from state and IndexedDB, then re-renders the preview. */
 export const handleMediaDelete = async (id) => {
     STATE.mediaFiles = STATE.mediaFiles.filter(f => f.id !== id);
     await deleteFileFromDB(id);
     renderImagePreview(STATE.mediaFiles, handleMediaDelete);
 };
 
+/** Registers all event listeners for CSV/media file handling and the publish flow. */
 export function registerFileListeners() {
 
     // Enable drag-and-drop on file inputs
@@ -146,7 +150,7 @@ export function registerFileListeners() {
     // Media file selection
     elements.imageInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB — GitHub's limit for the Contents API
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB - GitHub's limit for the Contents API
         const skipped = [];
 
         if (!STATE.mediaFiles) {
@@ -310,6 +314,7 @@ export function registerFileListeners() {
     }
 }
 
+/** Prepares Step 5 by auto-populating config fields and the publish summary. */
 function prepareConfigStep() {
     // Auto-populate config metadata filename from CSV
     if (STATE.csvFile && STATE.csvFile.name && elements.configMetadata) {
@@ -338,16 +343,16 @@ function prepareConfigStep() {
         const items = [];
 
         if (STATE.csvFile) {
-            items.push(`📄 CSV metadata: ${STATE.csvFile.name || 'data.csv'} → _data/`);
+            items.push(`CSV metadata: ${STATE.csvFile.name || 'data.csv'} → _data/`);
         }
 
         const mediaCount = (STATE.mediaFiles && STATE.mediaFiles.length) || 0;
         if (mediaCount > 0) {
-            items.push(`🖼️ ${mediaCount} media file${mediaCount > 1 ? 's' : ''} → objects/`);
+            items.push(`${mediaCount} media file${mediaCount > 1 ? 's' : ''} → objects/`);
         }
 
-        items.push('⚙️ Site configuration (_config.yml)');
-        items.push('🌐 Enable GitHub Pages');
+        items.push('Site configuration (_config.yml)');
+        items.push('Enable GitHub Pages');
 
         items.forEach(text => {
             const li = document.createElement('li');
@@ -360,6 +365,7 @@ function prepareConfigStep() {
 // Track active polling interval so it can be cleared on reset
 let _liveCheckInterval = null;
 
+/** Renders the publish success view with links and starts live-site polling. */
 export function showPublishSuccess() {
     const repoUrl = `https://github.com/${STATE.targetRepo}`;
     const owner = STATE.targetRepo.split('/')[0];
@@ -400,6 +406,33 @@ export function showPublishSuccess() {
     `;
     wrapper.appendChild(liveCheck);
 
+    // Live site preview — show immediately so the iframe loads as soon as the site builds
+    const previewSection = document.createElement('div');
+    previewSection.className = 'live-preview-container';
+    previewSection.id = 'live-site-preview';
+    previewSection.innerHTML = `
+        <div class="live-preview-header">
+            <h3>Live Preview</h3>
+            <div class="live-preview-actions">
+                <button type="button" class="live-preview-refresh" title="Reload preview">&#8635; Refresh</button>
+                <a href="${pageUrl}" target="_blank" class="live-preview-open" title="Open in new tab">Open in new tab &#8599;</a>
+            </div>
+        </div>
+        <div class="live-preview-frame-wrapper">
+            <iframe src="${pageUrl}" class="live-preview-iframe" id="live-preview-frame" title="Live site preview" sandbox="allow-scripts allow-same-origin allow-popups" loading="lazy"></iframe>
+        </div>
+    `;
+    wrapper.appendChild(previewSection);
+
+    // Wire up refresh button
+    const refreshBtn = previewSection.querySelector('.live-preview-refresh');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            const iframe = document.getElementById('live-preview-frame');
+            if (iframe) iframe.src = pageUrl;
+        });
+    }
+
     container.appendChild(wrapper);
 
     // Start polling for the live site
@@ -422,11 +455,7 @@ export function showPublishSuccess() {
     };
 }
 
-/**
- * Poll the GitHub Pages deployment status via the API every few seconds.
- * Uses the authenticated GitHub API to check the latest Pages build,
- * which avoids CORS issues and gives accurate build status.
- */
+/** Polls the GitHub Pages API to detect when the deployed site is live. */
 function startLiveCheck(pageUrl, indicatorEl) {
     // Clear any previous interval
     if (_liveCheckInterval) {
@@ -467,6 +496,10 @@ function startLiveCheck(pageUrl, indicatorEl) {
             <span class="live-check-icon">&#10003;</span>
             <span class="live-check-text">Your site is live! <a href="${pageUrl}" target="_blank">${pageUrl}</a></span>
         `;
+
+        // Refresh the iframe now that the site is confirmed live
+        const iframe = document.getElementById('live-preview-frame');
+        if (iframe) iframe.src = pageUrl;
     }
 
     function onTimeout() {
@@ -483,9 +516,7 @@ function startLiveCheck(pageUrl, indicatorEl) {
     _liveCheckInterval = setInterval(check, INTERVAL_MS);
 }
 
-/**
- * Populate the featured image <select> with objectids from the user's CSV.
- */
+/** Populates the featured image dropdown with image-type objectids from the CSV. */
 function populateFeaturedImageSelect() {
     const select = elements.configFeaturedImage;
     if (!select) return;
@@ -527,9 +558,7 @@ function populateFeaturedImageSelect() {
     updateFeaturedImagePreview();
 }
 
-/**
- * Show a thumbnail preview of the selected featured image (if the file is in media uploads).
- */
+/** Displays a thumbnail preview of the selected featured image. */
 function updateFeaturedImagePreview() {
     const preview = elements.featuredImagePreview;
     const select = elements.configFeaturedImage;
@@ -566,9 +595,7 @@ function updateFeaturedImagePreview() {
     }
 }
 
-/**
- * Fetch _data/theme.yml from the repo, update the featured-image field, and push it back.
- */
+/** Fetches theme.yml from the repo, updates the featured-image field, and pushes it. */
 async function updateThemeYml(owner, repoName, featuredImageId) {
     const path = '_data/theme.yml';
     const fileData = await githubRequest(`/repos/${owner}/${repoName}/contents/${path}`);
@@ -588,9 +615,7 @@ async function updateThemeYml(owner, repoName, featuredImageId) {
     });
 }
 
-/**
- * Fetch the existing _config.yml from the repo, update key fields, and push it back.
- */
+/** Fetches _config.yml from the repo, updates key fields, and pushes it. */
 async function updateConfigYml(owner, repoName) {
     // Fetch current _config.yml
     const configData = await githubRequest(`/repos/${owner}/${repoName}/contents/_config.yml`);
@@ -620,10 +645,7 @@ async function updateConfigYml(owner, repoName) {
     });
 }
 
-/**
- * Replace or append a top-level YAML field value.
- * Handles simple `key: value` patterns (not nested YAML).
- */
+/** Replaces or appends a top-level YAML key-value pair in an array of lines. */
 function replaceYamlField(lines, key, value) {
     const regex = new RegExp(`^(${key}:\\s*)(.*)$`);
     let found = false;

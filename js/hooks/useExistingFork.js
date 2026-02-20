@@ -3,6 +3,7 @@ import { elements } from '../elements.js';
 import { fetchUserRepos, getRepoReadme, getRepoContents } from '../api.js';
 import { updateUI, showError, clearError, renderRepoFileTree } from '../ui.js';
 
+/** Registers event listeners for browsing and selecting existing repositories. */
 export function registerExistingForkListeners() {
     if (elements.showExistingReposBtn) {
         elements.showExistingReposBtn.addEventListener('click', (e) => {
@@ -33,11 +34,13 @@ export function registerExistingForkListeners() {
     }
 }
 
+/** Shows the fork creation options and hides the existing repos list. */
 function showForkOptions() {
     if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.remove('hidden');
     if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
 }
 
+/** Hides fork options and displays the existing repositories list. */
 async function showExistingRepos() {
     if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
     if (elements.existingReposContainer) elements.existingReposContainer.classList.remove('hidden');
@@ -46,6 +49,7 @@ async function showExistingRepos() {
     await loadRepos();
 }
 
+/** Fetches and renders the user's repositories into the repos list. */
 async function loadRepos() {
     const listContainer = elements.reposList;
     const loadingObj = elements.reposLoading;
@@ -78,6 +82,7 @@ async function loadRepos() {
     }
 }
 
+/** Renders a list of repository items with click-to-select behavior. */
 function renderRepos(repos) {
     const listContainer = elements.reposList;
     listContainer.innerHTML = '';
@@ -104,6 +109,7 @@ function renderRepos(repos) {
     });
 }
 
+/** Validates a selected repo by checking its README for CollectionBuilder. */
 async function selectRepo(repo) {
     console.log('selectRepo called for:', repo.full_name);
     // Validate repo - check README for "CollectionBuilder-CSV"
@@ -145,6 +151,7 @@ async function selectRepo(repo) {
     }
 }
 
+/** Sets the validated repo as the target and shows the success view. */
 async function handleValidRepo(repo) {
     console.log('handleValidRepo starting for:', repo.full_name);
     STATE.targetRepo = repo.full_name;

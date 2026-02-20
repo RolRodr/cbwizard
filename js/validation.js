@@ -1,8 +1,4 @@
-/**
- * CSV Validation Logic for CollectionBuilder
- * Checks for errors (Red) and warnings (Yellow) based on CB metadata rules.
- */
-
+/** Validates all rows in a parsed CSV against CollectionBuilder metadata rules. */
 export function validateCSV(rows) {
     const report = new Map();
     if (!rows || rows.length < 2) return report; // Need header + data
@@ -59,6 +55,7 @@ export function validateCSV(rows) {
     return report;
 }
 
+/** Validates the objectid field for presence, format, and uniqueness. */
 function validateObjectId(row, rowIndex, colMap, report, objectIds) {
     const idx = colMap['objectid'];
     if (idx === undefined) return; // Column missing (global error check could be added elsewhere)
@@ -77,6 +74,7 @@ function validateObjectId(row, rowIndex, colMap, report, objectIds) {
     }
 }
 
+/** Validates the format field against allowed MIME types and CB types. */
 function validateFormat(row, rowIndex, colMap, report) {
     const idx = colMap['format'];
     if (idx === undefined) return null;
@@ -105,6 +103,7 @@ function validateFormat(row, rowIndex, colMap, report) {
     return val;
 }
 
+/** Validates that the title field is present. */
 function validateTitle(row, rowIndex, colMap, report) {
     const idx = colMap['title'];
     if (idx === undefined) return;
@@ -117,6 +116,7 @@ function validateTitle(row, rowIndex, colMap, report) {
     }
 }
 
+/** Validates the filename field for presence and secure URL usage. */
 function validateFilename(row, rowIndex, colMap, report, formatVal) {
     const idx = colMap['filename'];
     if (idx === undefined) return;
@@ -137,6 +137,7 @@ function validateFilename(row, rowIndex, colMap, report, formatVal) {
     }
 }
 
+/** Validates latitude and longitude fields are valid numbers. */
 function validateLatLong(row, rowIndex, colMap, report) {
     ['latitude', 'longitude'].forEach(field => {
         const idx = colMap[field];
@@ -155,6 +156,7 @@ function validateLatLong(row, rowIndex, colMap, report) {
     });
 }
 
+/** Validates the date field against accepted date formats. */
 function validateDate(row, rowIndex, colMap, report) {
     const idx = colMap['date'];
     if (idx === undefined) return;
@@ -176,6 +178,7 @@ function validateDate(row, rowIndex, colMap, report) {
     }
 }
 
+/** Checks that the rights field is present (recommended). */
 function validateRights(row, rowIndex, colMap, report) {
     const idx = colMap['rights'];
     if (idx === undefined) return;
@@ -188,6 +191,7 @@ function validateRights(row, rowIndex, colMap, report) {
     }
 }
 
+/** Checks that subject and location fields are present for tag cloud generation. */
 function validateCloudFields(row, rowIndex, colMap, report) {
     ['subject', 'location'].forEach(field => {
         const idx = colMap[field];
@@ -201,12 +205,7 @@ function validateCloudFields(row, rowIndex, colMap, report) {
     });
 }
 
-/**
- * Validates media files against CSV filenames.
- * @param {Array} mediaFiles - Array of file objects { name, type, ... }
- * @param {Array} csvRows - Parsed CSV rows (output of parseCSV)
- * @returns {Set<string>} - Set of invalid file names (not found in CSV)
- */
+/** Returns a set of media filenames not found in the CSV's filename column. */
 export function validateMediaFilenames(mediaFiles, csvRows) {
     const invalidNames = new Set();
     if (!mediaFiles || mediaFiles.length === 0 || !csvRows || csvRows.length < 2) {
@@ -217,7 +216,8 @@ export function validateMediaFilenames(mediaFiles, csvRows) {
     const header = csvRows[0].map(h => h.trim().toLowerCase());
     const filenameIdx = header.indexOf('filename');
 
-    if (filenameIdx === -1) return invalidNames; // No filename column, can't validate
+    // No filename column, can't validate
+    if (filenameIdx === -1) return invalidNames; 
 
     const validFilenames = new Set();
     for (let i = 1; i < csvRows.length; i++) {
@@ -234,12 +234,7 @@ export function validateMediaFilenames(mediaFiles, csvRows) {
     return invalidNames;
 }
 
-/**
- * Validates a user-entered CSV filename (without extension).
- * Allowed: letters, numbers, hyphens, underscores, periods.
- * @param {string} name - The filename component entered by user
- * @returns {boolean} - True if valid, false otherwise
- */
+/** Validates a user-entered CSV filename (letters, numbers, hyphens, underscores, periods). */
 export function validateCsvFilename(name) {
     if (!name) return false;
     // Regex for valid characters: a-z, A-Z, 0-9, -, _, .

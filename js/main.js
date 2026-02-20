@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateUI();
 });
 
-// --- State Restoration ---
+/** Restores persisted state (token, repo, files) from localStorage and IndexedDB. */
 async function loadState() {
     const savedEncrypted = localStorage.getItem('gh_wizard_token');
 

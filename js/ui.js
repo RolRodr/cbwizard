@@ -6,11 +6,8 @@ import { validateMediaFilenames } from './validation.js';
 import { renderCSVTable, parseCSV } from './utils/csv.js';
 import { getRepoContents } from './api.js';
 
-// --- UI Helpers ---
 
-/**
- * Renders the file structure of a repository into the file tree container.
- */
+/** Renders a repository's top-level file structure into the file tree container. */
 export async function renderRepoFileTree(owner, repoName) {
     const treeContainer = elements.repoFileTreeContainer;
     const treeCode = elements.repoFileTree;
@@ -31,8 +28,8 @@ export async function renderRepoFileTree(owner, repoName) {
 
         let treeStr = "";
         contents.forEach(item => {
-            const icon = item.type === 'dir' ? '📁' : '📄';
-            treeStr += `${icon} ${item.name}\n`;
+            const icon = item.type === 'dir' ? '/' : '';
+            treeStr += `${item.name}${icon}\n`;
         });
 
         treeCode.textContent = treeStr;
@@ -42,6 +39,7 @@ export async function renderRepoFileTree(owner, repoName) {
     }
 }
 
+/** Renders thumbnail previews for all media files, flagging those not found in the CSV. */
 export function renderImagePreview(mediaFiles, onDelete) {
     elements.imagePreview.innerHTML = '';
     if (!mediaFiles || mediaFiles.length === 0) {
@@ -85,16 +83,16 @@ export function renderImagePreview(mediaFiles, onDelete) {
             previewEl.classList.add('image-thumbnail');
         } else if (file.type.startsWith('audio/')) {
             previewEl = document.createElement('div');
-            previewEl.textContent = '🎵';
-            previewEl.style.fontSize = '48px';
+            previewEl.textContent = 'Audio';
+            previewEl.style.fontSize = '16px';
         } else if (file.type === 'application/pdf') {
             previewEl = document.createElement('div');
-            previewEl.textContent = '📄';
-            previewEl.style.fontSize = '48px';
+            previewEl.textContent = 'PDF';
+            previewEl.style.fontSize = '16px';
         } else {
             previewEl = document.createElement('div');
-            previewEl.textContent = '📁';
-            previewEl.style.fontSize = '48px';
+            previewEl.textContent = 'File';
+            previewEl.style.fontSize = '16px';
         }
 
         thumbWrapper.appendChild(previewEl);
@@ -138,6 +136,7 @@ export function renderImagePreview(mediaFiles, onDelete) {
     elements.imagePreview.classList.remove('hidden');
 }
 
+/** Displays a banner listing critical CSV validation errors, if any. */
 export function renderValidationBanner(validationReport, header) {
     const existingBanner = document.getElementById('csv-validation-banner');
     if (existingBanner) existingBanner.remove();
@@ -176,10 +175,6 @@ export function renderValidationBanner(validationReport, header) {
         const rowNum = parseInt(rowStr, 10);
         const colIndex = parseInt(colStr, 10);
         const colName = header[colIndex] || `Column ${colIndex + 1}`;
-        // Row number corresponds to data row index + 1 (header is 0 in rows array but 1 in file)
-        // rowNum from validation is index in rows array.
-        // So rowNum=1 is first data row (line 2).
-        // we want line number = rowNum + 1.
         const lineNum = rowNum + 1;
 
         const li = document.createElement('li');
@@ -196,6 +191,7 @@ export function renderValidationBanner(validationReport, header) {
     announce(`Found ${errors.length} critical issue${errors.length > 1 ? 's' : ''} in your CSV file. Review the highlighted cells.`);
 }
 
+/** Updates the entire UI to reflect the current wizard step and app state. */
 export function updateUI() {
     const steps = getSteps();
     steps.forEach((step, index) => {
@@ -232,10 +228,7 @@ export function updateUI() {
     updateSidebarNav();
 }
 
-/**
- * Restores within-step UI state based on STATE so that navigating back
- * to a completed step shows the correct post-action view.
- */
+/** Restores within-step UI state so navigating back shows the correct post-action view. */
 function restoreStepState() {
     // Step 1: if user is authenticated and navigating back, show the profile card
     if (STATE.currentStep === 1 && STATE.user) {
@@ -310,6 +303,7 @@ function restoreStepState() {
     }
 }
 
+/** Updates sidebar navigation to highlight the current step and enable completed steps. */
 function updateSidebarNav() {
     const { currentStep, user } = STATE;
 
@@ -341,6 +335,7 @@ function updateSidebarNav() {
     });
 }
 
+/** Registers click and keyboard listeners on sidebar navigation items. */
 export function initSidebarNav() {
     elements.navItems.forEach(item => {
         // Click handler
@@ -362,20 +357,20 @@ export function initSidebarNav() {
     });
 }
 
+/** Displays a global error message to the user. */
 export function showError(msg) {
     elements.globalError.textContent = msg;
     elements.globalError.classList.remove('hidden');
     announce(msg);
 }
 
+/** Hides the global error message. */
 export function clearError() {
     elements.globalError.textContent = '';
     elements.globalError.classList.add('hidden');
 }
 
-/**
- * Announce a message to screen readers via the live region.
- */
+/** Announces a message to screen readers via the ARIA live region. */
 export function announce(msg) {
     const el = document.getElementById('sr-announcer');
     if (el) {

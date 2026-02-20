@@ -4,6 +4,7 @@ import { encryptToken } from './utils/crypto.js';
 // --- IndexedDB ---
 export let db;
 
+/** Opens (or creates) the IndexedDB database and sets up object stores. */
 export function initDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -24,6 +25,7 @@ export function initDB() {
     });
 }
 
+/** Saves a file record to the IndexedDB files store. */
 export async function saveFileToDB(id, fileData) {
     return new Promise((resolve, reject) => {
         const tx = db.transaction([STORE_FILES], 'readwrite');
@@ -35,6 +37,7 @@ export async function saveFileToDB(id, fileData) {
     });
 }
 
+/** Retrieves all file records from the IndexedDB files store. */
 export async function getAllFilesFromDB() {
     return new Promise((resolve, reject) => {
         const tx = db.transaction([STORE_FILES], 'readonly');
@@ -46,6 +49,7 @@ export async function getAllFilesFromDB() {
     });
 }
 
+/** Deletes a file record from the IndexedDB files store by id. */
 export async function deleteFileFromDB(id) {
     return new Promise((resolve, reject) => {
         const tx = db.transaction([STORE_FILES], 'readwrite');
@@ -59,6 +63,8 @@ export async function deleteFileFromDB(id) {
 
 
 // --- LocalStorage ---
+
+/** Persists the current token, template, and target repo to localStorage. */
 export async function saveState() {
     if (STATE.token) {
         const encrypted = await encryptToken(STATE.token);
@@ -68,6 +74,7 @@ export async function saveState() {
     if (STATE.targetRepo) localStorage.setItem('gh_wizard_target', STATE.targetRepo);
 }
 
+/** Clears all persisted state from localStorage and IndexedDB, resets STATE. */
 export function clearState() {
     localStorage.clear();
     // Clear IndexedDB
