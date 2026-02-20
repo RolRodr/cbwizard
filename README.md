@@ -1,6 +1,6 @@
 # CollectionBuilder Wizard
 
-A simple, browser-based wizard that helps you create a [CollectionBuilder](https://collectionbuilder.github.io/) digital exhibit without having to mess around with GitHub too much. This project is meant to be a really gentle introduction to CollectionBuilder, in addition to providing some helpful utilities, such as pointing out potential issues or error with data before uploading your dataset to your CollectionBuilder Repository. 
+A simple, browser-based wizard that helps you create a [CollectionBuilder](https://collectionbuilder.github.io/) digital exhibit without having to deal with the technical curve of GitHub too much. This project is meant to be a really gentle introduction to CollectionBuilder, in addition to providing some helpful utilities, such as pointing out potential issues or errors with your exhibit metadata before uploading it to your CollectionBuilder Repository. 
 
 ## Features
 
@@ -15,7 +15,7 @@ A simple, browser-based wizard that helps you create a [CollectionBuilder](https
 
 ## Privacy & Security
 
-CollectionBuilder Wizard takes your privacy seriously. Your GitHub token is **AES-256-GCM encrypted** before being stored in the browser, a strict **Content Security Policy** blocks unauthorized scripts and network requests, and **all data is cleared on logout** — nothing is ever sent to a third-party server.
+CollectionBuilder Wizard takes your privacy seriously. Your GitHub token is **AES-256-GCM encrypted** before being stored in the browser, a strict **Content Security Policy** blocks unauthorized scripts and network requests, and **all data is cleared on logout** — nothing is ever sent to a third-party server. The entire application runs only on the client side.
 
 For the full details, see [PRIVACY.md](PRIVACY.md).
 
