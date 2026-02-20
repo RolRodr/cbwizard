@@ -1,0 +1,16 @@
+<!-- Step 4: Media Files -->
+<section id="step-4" class="wizard-step hidden">
+    <h2>Step 4: Media Files (Optional)</h2>
+    <p>Select media files for your collection (Images, Audio, PDF). Ideally, use URLs for large files in
+        your CSV because GitHub
+        has strict limits on file sizes. <strong>Files must not exceed 10 MB each.</strong></p>
+    <label for="image-files">Select Media:</label>
+    <p id="media-file-hint" class="field-hint">Accepted formats: JPEG, PNG, MP3, PDF. Each file must be under 10 MB.</p>
+    <input type="file" id="image-files" accept="image/*,audio/*,application/pdf" multiple aria-describedby="media-file-hint">
+    <div id="image-preview" class="preview-container hidden"></div>
+    <div class="info-message" style="margin-top: 16px;">Media files will be uploaded when you publish in the final step.</div>
+    <div id="step-4-buttons" style="margin-top: 16px;">
+        <button id="step-4-next">Next: Configure &amp; Publish</button>
+        <button id="step-4-skip" class="secondary">Skip Media</button>
+    </div>
+</section>

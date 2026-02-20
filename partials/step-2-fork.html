@@ -1,0 +1,66 @@
+<!-- Step 2: Fork -->
+<section id="step-2" class="wizard-step hidden">
+    <h2>Step 2: Fork Template</h2>
+
+    <div id="fork-options-container">
+        <p>We will fork the official <strong><a
+                    href="https://github.com/CollectionBuilder/collectionbuilder-gh" target="_blank"
+                    rel="noopener noreferrer">CollectionBuilder-GH <span aria-hidden="true">↗</span><span
+                        class="sr-only"> (opens in a new
+                        tab)</span></a></strong>
+            template to your account.</p>
+
+        <form id="fork-form">
+            <label for="template-repo">Template Repository (Source):</label>
+            <input type="text" id="template-repo" value="CollectionBuilder/collectionbuilder-gh" readonly
+                class="readonly-input">
+
+            <label for="new-repo-name" style="margin-top: 15px;">New Repository Name:</label>
+            <input type="text" id="new-repo-name" placeholder="my-collection-name" required
+                pattern="[a-zA-Z0-9\-\._]+" aria-describedby="repo-name-hint">
+            <p id="repo-name-hint" class="field-hint">Only letters, numbers, hyphens, periods, and
+                underscores
+                are
+                allowed.</p>
+            <div class="info-message">
+                This will be the name of your new repository on GitHub.
+            </div>
+            <button type="submit" id="fork-btn">Fork Repository</button>
+        </form>
+        <div id="fork-status" class="status-message hidden" role="status" aria-live="polite"></div>
+
+        <div style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+            <p>Already have a forked repository?</p>
+            <button id="show-existing-repos-btn" class="secondary">Select Existing Repository</button>
+        </div>
+    </div>
+
+    <!-- Existing Repos View -->
+    <div id="existing-repos-container" class="hidden">
+        <button id="back-to-fork-btn" class="secondary" style="margin-bottom: 16px;">&larr; Back to
+            Fork</button>
+        <h3>Select Your Collection Repository</h3>
+        <p>Select a repository that was forked from <strong>CollectionBuilder-CSV</strong>.</p>
+
+        <input type="text" id="repos-search" placeholder="Search repositories..." aria-label="Filter repositories" style="margin-bottom: 12px;">
+
+        <div id="repos-loading" class="hidden">Loading your repositories...</div>
+        <div id="repos-error" class="error-message hidden"></div>
+
+        <div id="repos-list" class="repos-list"></div>
+    </div>
+
+    <div id="step-2-success" class="hidden" style="margin-top: 20px;" role="status">
+        <div class="success-message">
+            Repository selected <span id="selected-repo-name" style="font-weight:bold;"></span>! <br>
+            <a id="new-repo-link" href="#" target="_blank" rel="noopener noreferrer">View on GitHub <span
+                    aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+        </div>
+        <!-- File Tree Visualization -->
+        <div id="repo-file-tree-container" class="file-tree-container hidden">
+            <h4>Repository Contents:</h4>
+            <pre id="repo-file-tree" class="file-tree-code"></pre>
+        </div>
+        <button id="step-2-next" style="margin-top: 10px;">Next: CSV Metadata</button>
+    </div>
+</section>

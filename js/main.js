@@ -12,9 +12,11 @@ import { registerExistingForkListeners } from './hooks/useExistingFork.js';
 import { registerFileListeners, handleMediaDelete, showPublishSuccess } from './hooks/useFiles.js';
 import { updateUI, initSidebarNav, renderImagePreview } from './ui.js';
 import { initAboutModal } from './hooks/useAboutModal.js';
+import { loadPartials } from './utils/loadPartials.js';
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', async () => {
+    await loadPartials();
     await initDB();
     await loadState();
 

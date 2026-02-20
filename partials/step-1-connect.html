@@ -1,0 +1,63 @@
+<!-- Step 1: Connect -->
+<section id="step-1" class="wizard-step hidden">
+    <h2>Connect to GitHub</h2>
+    <p>Please enter your Personal Access Token (PAT). <strong>The token requires <code>repo</code> scope to fork and
+        write to repositories.</strong></p>
+    <form id="auth-form">
+        <details class="instructions">
+            <summary>How to create a Personal Access Token (Classic)</summary>
+            <div class="info-message">
+                <strong>Note:</strong> We recommend using a <strong>Classic Token</strong> because
+                Fine-grained tokens currently have API limitations when forking public repositories you
+                don't
+                own.
+            </div>
+            <ol>
+                <li>Go to <a href="https://github.com/settings/tokens" target="_blank"
+                        rel="noopener noreferrer">GitHub Settings &gt; Developer Settings &gt; Tokens
+                        (Classic)
+                        <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new
+                            tab)</span></a>.
+                </li>
+                <li>Click "Generate new token (classic)".</li>
+                <li>Give it a Note (e.g., "Wizard App").</li>
+                <li>Select the <code>repo</code> scope (Full control of private repositories).
+                    <ul>
+                        <li>Required to fork the template and push content.</li>
+                    </ul>
+                </li>
+                <li>Click "Generate token" and copy it here.</li>
+            </ol>
+        </details>
+        <label for="github-token">Personal Access Token:</label>
+        <input type="password" id="github-token" required autocomplete="current-password">
+        <div class="warning">
+            Tokens are stored in your browser's local storage. Ensure you are on a trusted device.
+            <a href="https://github.com/RolRodr/cbwizard/blob/main/PRIVACY.md" target="_blank">Click here to learn more about this app's privacy.</a>
+        </div>
+        <button type="submit" id="connect-btn">Connect</button>
+    </form>
+
+    <div id="user-confirmation" class="hidden">
+        <div class="user-profile-card">
+            <div class="user-profile-main">
+                <img id="user-avatar" src="" alt="" width="80" height="80" class="user-profile-avatar">
+                <div class="user-profile-info">
+                    <h3 id="confirm-displayname" class="user-profile-name"></h3>
+                    <p id="confirm-username" class="user-profile-username"></p>
+                    <p id="confirm-bio" class="user-profile-bio"></p>
+                </div>
+            </div>
+            <div class="user-profile-stats">
+                <div class="stat-item">
+                    <span id="confirm-repos" class="stat-value">0</span>
+                    <span class="stat-label">Repositories</span>
+                </div>
+            </div>
+        </div>
+        <div class="actions" style="margin-top: 16px;">
+            <button id="confirm-user-btn">Yes, Continue</button>
+            <button id="cancel-user-btn" class="secondary">No, Sign Out</button>
+        </div>
+    </div>
+</section>

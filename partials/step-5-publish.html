@@ -1,0 +1,49 @@
+<!-- Step 5: Configure & Publish -->
+<section id="step-5" class="wizard-step hidden">
+    <h2>Step 5: Configure &amp; Publish</h2>
+
+    <div id="config-section" style="margin-bottom: 24px;">
+        <p>Configure your site settings below, then publish everything to GitHub. This will upload your CSV, media files, update your site configuration, and enable GitHub Pages — all at once.</p>
+
+        <label for="config-title">Site Title:</label>
+        <input type="text" id="config-title" placeholder="My Digital Collection" aria-describedby="config-title-hint">
+        <p id="config-title-hint" class="field-hint">The name displayed in the header of your site.</p>
+
+        <label for="config-tagline">Tagline (optional):</label>
+        <input type="text" id="config-tagline" placeholder="A short description of your collection" aria-describedby="config-tagline-hint">
+        <p id="config-tagline-hint" class="field-hint">A subtitle shown below the title.</p>
+
+        <label for="config-description">Description (optional):</label>
+        <input type="text" id="config-description" placeholder="Brief description for search engines and social sharing" aria-describedby="config-desc-hint">
+        <p id="config-desc-hint" class="field-hint">Used for SEO meta tags.</p>
+
+        <label for="config-metadata">Metadata Filename:</label>
+        <input type="text" id="config-metadata" readonly class="readonly-input" aria-describedby="config-metadata-hint">
+        <p id="config-metadata-hint" class="field-hint">Auto-populated from your CSV filename.</p>
+
+        <div id="featured-image-section" style="margin-top: 20px;">
+            <label for="config-featured-image">Featured Image (optional):</label>
+            <p id="config-featured-hint" class="field-hint">Select an item from your collection to use as the homepage banner image. This sets <code>featured-image</code> in <code>_data/theme.yml</code>.</p>
+            <div class="featured-image-picker">
+                <select id="config-featured-image" aria-describedby="config-featured-hint">
+                    <option value="">— None (use default) —</option>
+                </select>
+                <div id="featured-image-preview" class="featured-image-preview hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload summary -->
+    <div id="publish-summary" class="info-message" style="margin-bottom: 16px;">
+        <strong>Ready to publish:</strong>
+        <ul id="publish-summary-list" style="margin: 8px 0 0 16px; padding: 0;"></ul>
+    </div>
+
+    <div id="publish-progress" class="upload-progress-container hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Publish progress">
+        <div class="upload-progress-label" id="publish-progress-label">Publishing...</div>
+        <div class="upload-progress-bar">
+            <div class="upload-progress-fill" id="publish-progress-fill"></div>
+        </div>
+    </div>
+    <button id="publish-btn">Publish to GitHub</button>
+</section>

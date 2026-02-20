@@ -1,0 +1,117 @@
+<!-- Step 3: CSV Metadata -->
+<section id="step-3" class="wizard-step hidden">
+    <h2>Step 3: CSV Metadata</h2>
+    <p>Select a CSV metadata file for your collection. Make sure your CSV follows the required
+        format —
+        refer to the <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/"
+            target="_blank" rel="noopener noreferrer">CollectionBuilder Metadata Documentation <span
+                aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a> for
+        guidance
+        on required fields and formatting.</p>
+
+    <!-- Metadata field reference (from CB docs) -->
+    <details class="metadata-ref">
+        <summary>Metadata Field Reference</summary>
+        <div id="metadata-ref-content">
+
+            <h4 style="margin: 8px 0 4px; font-size: 0.9rem;">Required Fields</h4>
+            <table class="demo-table" style="font-size: 0.82rem; margin-bottom: 12px;">
+                <thead>
+                    <tr><th>Field</th><th>Description</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>objectid</strong></td>
+                        <td>Unique identifier. Lowercase, no spaces or special characters. Underscores and dashes OK; no slashes.</td>
+                        <td><code>coll002</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>filename</strong></td>
+                        <td>Object's filename (with extension) exactly matching the file in your "objects" folder, or a full HTTPS URL to an externally hosted file. Leave blank for YouTube/Vimeo items.</td>
+                        <td><code>letter001.pdf</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>title</strong></td>
+                        <td>Short, descriptive name for the item. One title per item.</td>
+                        <td><code>Haystack Rock</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>format</strong></td>
+                        <td>Item's <a href="https://www.iana.org/assignments/media-types/media-types.xhtml" target="_blank" rel="noopener noreferrer">MIME type</a>. Controls how objects display. Common values: <code>image/jpeg</code>, <code>image/png</code>, <code>application/pdf</code>, <code>audio/mp3</code>, <code>video/mp4</code>.</td>
+                        <td><code>image/jpeg</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin: 12px 0 4px; font-size: 0.9rem;">Fields Required for Visualizations</h4>
+            <table class="demo-table" style="font-size: 0.82rem; margin-bottom: 4px;">
+                <thead>
+                    <tr><th>Page</th><th>Required Fields</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Map</td><td><strong>latitude</strong> &amp; <strong>longitude</strong> — geographic coordinates (e.g. <code>46.731643</code>, <code>-117.165625</code>)</td></tr>
+                    <tr><td>Timeline</td><td><strong>date</strong> — format <code>yyyy-mm-dd</code>, <code>yyyy-mm</code>, or <code>yyyy</code></td></tr>
+                    <tr><td>Subjects</td><td><strong>subject</strong> — topic(s), separated by semicolons (e.g. <code>Dogs; Cats; Zebras</code>)</td></tr>
+                    <tr><td>Locations</td><td><strong>location</strong> — place name(s), separated by semicolons (e.g. <code>Pullman, Washington; Moscow, Idaho</code>)</td></tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin: 12px 0 4px; font-size: 0.9rem;">Optional (Recommended)</h4>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>youtubeid</strong> - YouTube video ID (only for YouTube items). Leave blank for all other items.</li>
+                <li><strong>vimeoid</strong> - Vimeo video ID (only for Vimeo items). Leave blank for all other items.</li>
+                <li><strong>creator</strong> — entity who made the resource; semicolon-separated (e.g. <code>Smith, John; Doe, Jane</code>)</li>
+                <li><strong>description</strong> — brief account of the item</li>
+                <li><strong>source</strong> — related source collection (e.g. <code>PG 5, University of Idaho Library Special Collections and Archives</code>)</li>
+                <li><strong>identifier</strong> — unique ID from the source collection</li>
+                <li><strong>type</strong> — <a href="https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/2003-02-12/" target="_blank" rel="noopener noreferrer">DCMI Type</a> (e.g. <code>Image;StillImage</code>, <code>Text</code>, <code>Sound</code>)</li>
+                <li><strong>language</strong> — <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php" target="_blank" rel="noopener noreferrer">ISO 639-2</a> code (e.g. <code>eng</code>, <code>fra</code>)</li>
+                <li><strong>rights</strong> — free-text rights statement</li>
+                <li><strong>rightsstatement</strong> — standardized rights URI from <a href="https://creativecommons.org/" target="_blank" rel="noopener noreferrer">creativecommons.org</a> or <a href="https://rightsstatements.org/en/" target="_blank" rel="noopener noreferrer">rightsstatements.org</a></li>
+            </ul>
+
+            <p style="margin-top: 10px; margin-bottom: 0; font-size: 0.82rem; color: var(--text-secondary, #57606a);">
+                Full details: <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/" target="_blank" rel="noopener noreferrer">CollectionBuilder Metadata Docs ↗</a> &nbsp;|&nbsp;
+                <a href="https://docs.google.com/spreadsheets/d/1Uv9ytll0hysMOH1j-VL1lZx6PWvc1zf3L35sK_4IuzI/copy?usp=sharing" target="_blank" rel="noopener noreferrer">Metadata Template (Google Sheets) ↗</a>
+            </p>
+        </div>
+    </details>
+
+    <!-- Demo metadata from the forked repo -->
+    <div id="demo-csv-section">
+        <h3>Template Demo Data <span class="field-hint" style="font-weight:400;">(from your forked
+                repository)</span></h3>
+        <div id="demo-csv-loading" class="info-message">Loading demo metadata from your repository…</div>
+        <div id="demo-csv-error" class="hidden" style="font-size:13px; color:#57606a; margin-bottom:12px;">
+        </div>
+        <div id="demo-csv-table-wrap" class="demo-table-wrap hidden">
+            <table id="demo-csv-table" class="demo-table"></table>
+        </div>
+    </div>
+
+    <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border-color);">
+
+    <label for="csv-file">Select Your CSV Metadata File:</label>
+    <p id="csv-file-hint" class="field-hint">Select a .csv file with your collection metadata. Need help? Check the <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/" target="_blank" rel="noopener noreferrer">metadata documentation</a>.</p>
+    <input type="file" id="csv-file" accept=".csv" aria-describedby="csv-file-hint">
+
+    <!-- Table preview of uploaded CSV -->
+    <div id="csv-preview" class="demo-table-wrap hidden" style="margin-top: 16px;">
+        <table id="csv-table" class="demo-table"></table>
+    </div>
+
+    <!-- Filename controls (shown after file selected) -->
+    <div id="csv-upload-controls" class="hidden" style="margin-top: 20px;">
+        <label for="csv-filename">File name in repository:</label>
+        <div class="csv-name-row">
+            <span class="csv-name-prefix">_data/</span>
+            <input type="text" id="csv-filename" placeholder="my-collection"
+                aria-describedby="csv-filename-hint">
+            <span class="csv-name-suffix">.csv</span>
+        </div>
+        <p id="csv-filename-hint" class="field-hint">Only letters, numbers, hyphens, underscores, and
+            periods.</p>
+        <div class="info-message">Your CSV will be uploaded when you publish in the final step.</div>
+        <button id="step-3-next" style="margin-top: 12px;">Next: Media Files</button>
+    </div>
+</section>
