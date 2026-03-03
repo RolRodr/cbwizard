@@ -96,20 +96,51 @@ export function registerAuthListeners() {
     const logoutYesBtn = document.getElementById('logout-yes-btn');
     const logoutNoBtn = document.getElementById('logout-no-btn');
 
-    elements.logoutBtn.addEventListener('click', () => {
-        elements.logoutBtn.classList.add('hidden');
-        logoutConfirm.classList.remove('hidden');
-        logoutYesBtn.focus();
-    });
+    if (elements.userAvatarBtn) {
+        elements.userAvatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdown = elements.userDropdown;
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+                const isExpanded = !dropdown.classList.contains('hidden');
+                elements.userAvatarBtn.setAttribute('aria-expanded', isExpanded);
+                if (isExpanded && logoutConfirm) {
+                    logoutConfirm.classList.add('hidden');
+                }
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (elements.userDropdown && !elements.userDropdown.classList.contains('hidden')) {
+                if (!elements.userDropdown.contains(e.target) && !elements.userAvatarBtn.contains(e.target)) {
+                    elements.userDropdown.classList.add('hidden');
+                    elements.userAvatarBtn.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    if (elements.logoutBtn) {
+        elements.logoutBtn.addEventListener('click', () => {
+            if (elements.userDropdown) elements.userDropdown.classList.add('hidden');
+            if (elements.userAvatarBtn) elements.userAvatarBtn.setAttribute('aria-expanded', 'false');
+            if (logoutConfirm) {
+                logoutConfirm.classList.remove('hidden');
+                if (logoutYesBtn) logoutYesBtn.focus();
+            }
+        });
+    }
 
     logoutYesBtn.addEventListener('click', () => {
         clearState();
         location.reload();
     });
 
-    logoutNoBtn.addEventListener('click', () => {
-        logoutConfirm.classList.add('hidden');
-        elements.logoutBtn.classList.remove('hidden');
-        elements.logoutBtn.focus();
-    });
+    if (logoutNoBtn) {
+        logoutNoBtn.addEventListener('click', () => {
+            if (logoutConfirm) logoutConfirm.classList.add('hidden');
+            if (elements.userAvatarBtn) elements.userAvatarBtn.focus();
+        });
+    }
 }

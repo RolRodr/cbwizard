@@ -216,7 +216,8 @@ export function updateUI() {
 
     if (STATE.user) {
         elements.userInfo.classList.remove('hidden');
-        elements.username.textContent = STATE.user.login;
+        if (elements.username) elements.username.textContent = STATE.user.login;
+        if (elements.topAvatar) elements.topAvatar.src = STATE.user.avatar_url;
     } else {
         elements.userInfo.classList.add('hidden');
     }

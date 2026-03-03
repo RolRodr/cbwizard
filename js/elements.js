@@ -34,11 +34,21 @@ export const elements = {
     get cancelUserBtn() { return document.getElementById('cancel-user-btn'); },
 
     get userInfo() { return document.getElementById('user-info'); },
+    get userAvatarBtn() { return document.getElementById('user-avatar-btn'); },
+    get topAvatar() { return document.getElementById('top-avatar'); },
+    get userDropdown() { return document.getElementById('user-dropdown'); },
     get username() { return document.getElementById('username'); },
     get logoutBtn() { return document.getElementById('logout-btn'); },
     get globalError() { return document.getElementById('global-error'); },
 
-    // Step 2: Fork
+    // Step 2: Fork / Choose Repository
+    get repoChoicesContainer() { return document.getElementById('repo-choices-container'); },
+    get choiceForkCsv() { return document.getElementById('choice-fork-csv'); },
+    get choiceForkGh() { return document.getElementById('choice-fork-gh'); },
+    get choiceModifyExisting() { return document.getElementById('choice-modify-existing'); },
+    get backToChoicesBtn() { return document.getElementById('back-to-choices-btn'); },
+
+    get forkOptionsContainer() { return document.getElementById('fork-options-container'); },
     get forkForm() { return document.getElementById('fork-form'); },
     get templateRepoInput() { return document.getElementById('template-repo'); },
     get newRepoNameInput() { return document.getElementById('new-repo-name'); },

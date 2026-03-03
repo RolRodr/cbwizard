@@ -1,16 +1,25 @@
 <header>
     <div id="header-content">
-        <img src="assets/wizard.svg" alt="" width="32" height="32" style="display: inline-block; margin-left: 8px; vertical-align: middle;">
+        <img src="assets/wizard.svg" alt="" width="32" height="32"
+            style="display: inline-block; margin-left: 8px; vertical-align: middle;">
         <h1>CollectionBuilder Wizard</h1>
     </div>
     <div id="user-info" class="hidden">
-        Logged in as <span id="username"></span>
-        <button id="logout-btn">Logout</button>
-        <span id="logout-confirm" class="logout-confirm hidden" role="alertdialog"
-            aria-labelledby="logout-confirm-msg">
+        <button id="user-avatar-btn" class="avatar-btn" aria-haspopup="true" aria-expanded="false"
+            aria-label="User Menu">
+            <img id="top-avatar" src="" alt="User Avatar" class="top-avatar">
+        </button>
+        <div id="user-dropdown" class="user-dropdown hidden">
+            <div class="dropdown-header">
+                Signed in as <strong id="username"></strong>
+            </div>
+            <hr class="dropdown-divider">
+            <button id="logout-btn" class="dropdown-item">Sign out</button>
+        </div>
+        <div id="logout-confirm" class="logout-confirm hidden" role="alertdialog" aria-labelledby="logout-confirm-msg">
             <span id="logout-confirm-msg">Clear all local data and log out?</span>
             <button id="logout-yes-btn" class="secondary">Yes, log out</button>
             <button id="logout-no-btn" class="secondary">Cancel</button>
-        </span>
+        </div>
     </div>
 </header>
