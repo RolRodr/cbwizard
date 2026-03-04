@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self';
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';
                    script-src  'self';
                    style-src   'self' 'unsafe-inline';
                    style-src-attr 'self' 'unsafe-inline';
@@ -47,6 +46,15 @@
     <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <div data-partial="partials/footer.html"></div>
+
+    <template id="wizard-loading-template">
+        <div class="wizard-loading-inline">
+            <div class="wizard-loading-content">
+                <img src="assets/wizard.svg" alt="Wizard Loading" class="wizard-loading-icon">
+                <p class="wizard-loading-text">The wizard is conjuring...</p>
+            </div>
+        </div>
+    </template>
 
     <script type="module" src="js/main.js"></script>
 </body>

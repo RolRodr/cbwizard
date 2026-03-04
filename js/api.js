@@ -38,7 +38,7 @@ export async function fetchUserRepos(token = STATE.token) {
     let keepFetching = true;
 
     while (keepFetching) {
-        // per_page=100 is the max
+        // max 100 repos per page
         const data = await githubRequest(`/user/repos?sort=updated&per_page=100&page=${page}&type=owner`, 'GET', null, token);
 
         if (data && data.length > 0) {
@@ -68,17 +68,20 @@ export async function getRepoContents(owner, repo, path = '', token = STATE.toke
     return githubRequest(`/repos/${owner}/${repo}/contents/${path}`, 'GET', null, token);
 }
 
+/** Retrieves the GitHub Pages configuration for a repository, returning null if not enabled. */
+export async function getGitHubPages(owner, repo, token = STATE.token) {
+    try {
+        return await githubRequest(`/repos/${owner}/${repo}/pages`, 'GET', null, token);
+    } catch (e) {
+        if (e.status === 404) return null;
+        throw e;
+    }
+}
+
 /** Enables GitHub Pages on the repository using the main branch (no-op if already enabled). */
 export async function enableGitHubPages(owner, repo, token = STATE.token) {
     let alreadyExists = false;
-
-    try {
-        // Check if Pages is already enabled
-        await githubRequest(`/repos/${owner}/${repo}/pages`, 'GET', null, token);
-        alreadyExists = true;
-    } catch (e) {
-        if (e.status !== 404) throw e;
-    }
+    if (await getGitHubPages(owner, repo, token)) alreadyExists = true;
 
     if (!alreadyExists) {
         // Pages not yet enabled — create it (deploy from branch, not Actions)

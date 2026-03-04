@@ -69,16 +69,24 @@ export const elements = {
     get selectedRepoName() { return document.getElementById('selected-repo-name'); },
     get repoFileTreeContainer() { return document.getElementById('repo-file-tree-container'); },
     get repoFileTree() { return document.getElementById('repo-file-tree'); },
+    get repoConfigContainer() { return document.getElementById('repo-config-container'); },
+    get repoConfigContent() { return document.getElementById('repo-config-content'); },
     get newRepoLink() { return document.getElementById('new-repo-link'); },
+    get changeRepoBtn() { return document.getElementById('change-repo-btn'); },
     get step2Next() { return document.getElementById('step-2-next'); },
 
-    // Step 3: CSV
+    // Step 3: CSV Input and Preview
     get csvInput() { return document.getElementById('csv-file'); },
     get csvPreview() { return document.getElementById('csv-preview'); },
     get csvTable() { return document.getElementById('csv-table'); },
     get csvUploadControls() { return document.getElementById('csv-upload-controls'); },
     get csvFilenameInput() { return document.getElementById('csv-filename'); },
     get step3Next() { return document.getElementById('step-3-next'); },
+    // Step 3: Demo CSV Preview
+    get demoCsvLoading() { return document.getElementById('demo-csv-loading'); },
+    get demoCsvError() { return document.getElementById('demo-csv-error'); },
+    get demoCsvTableWrap() { return document.getElementById('demo-csv-table-wrap'); },
+    get demoCsvTable() { return document.getElementById('demo-csv-table'); },
 
     // Step 4: Media Files
     get imageInput() { return document.getElementById('image-files'); },
@@ -110,9 +118,6 @@ export const elements = {
     get stepNav() { return document.getElementById('step-nav'); },
     get navItems() { return Array.from(document.querySelectorAll('#step-nav li')); },
 
-    // Step 3 demo CSV preview
-    get demoCsvLoading() { return document.getElementById('demo-csv-loading'); },
-    get demoCsvError() { return document.getElementById('demo-csv-error'); },
-    get demoCsvTableWrap() { return document.getElementById('demo-csv-table-wrap'); },
-    get demoCsvTable() { return document.getElementById('demo-csv-table'); }
+    // Global Loading Overlay
+    get wizardLoadingTemplate() { return document.getElementById('wizard-loading-template'); },
 };

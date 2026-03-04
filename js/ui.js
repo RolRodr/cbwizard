@@ -4,7 +4,7 @@ import { loadDemoCSV } from './hooks/useDemoCSV.js';
 import { handleMediaDelete } from './hooks/useFiles.js';
 import { validateMediaFilenames } from './validation.js';
 import { renderCSVTable, parseCSV } from './utils/csv.js';
-import { getRepoContents } from './api.js';
+import { getRepoContents, getGitHubPages } from './api.js';
 
 
 /** Renders a repository's top-level file structure into the file tree container. */
@@ -36,6 +36,75 @@ export async function renderRepoFileTree(owner, repoName) {
     } catch (err) {
         console.error("Error fetching repo contents:", err);
         treeCode.textContent = "Error loading file structure.";
+    }
+}
+
+/** Renders repository configuration from _config.yml to the UI. */
+export async function renderRepoConfig(owner, repoName) {
+    const configContainer = elements.repoConfigContainer;
+    const configContent = elements.repoConfigContent;
+
+    if (!configContainer || !configContent) return;
+
+    configContainer.classList.remove('hidden');
+    configContent.innerHTML = "<p>Loading repository configuration...</p>";
+
+    try {
+        const fileData = await getRepoContents(owner, repoName, '_config.yml');
+
+        if (!fileData || !fileData.content) {
+            throw new Error("Could not fetch _config.yml.");
+        }
+
+        // Decode base64 content
+        const contentStr = decodeURIComponent(escape(atob(fileData.content)));
+
+        // Simple regex extraction for YAML properties
+        const extractProp = (key) => {
+            const regex = new RegExp(`^${key}:\\s*(.*)`, 'm');
+            const match = contentStr.match(regex);
+            let val = match ? match[1].trim() : '';
+            // Remove optional surrounding quotes
+            if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+            if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
+            return val || `<span style="color: #999; font-style: italic;">Not set</span>`;
+        };
+
+        const configUI = `
+            <ul style="list-style: none; padding: 0; margin: 0; text-align: left;">
+                <li style="margin-bottom: 8px;"><strong>Title:</strong> ${extractProp('title')}</li>
+                <li style="margin-bottom: 8px;"><strong>Tagline:</strong> ${extractProp('tagline')}</li>
+                <li style="margin-bottom: 8px;"><strong>Description:</strong> ${extractProp('description')}</li>
+                <li style="margin-bottom: 8px;"><strong>Author:</strong> ${extractProp('author')}</li>
+                <li style="margin-bottom: 8px;"><strong>Metadata:</strong> ${extractProp('metadata')}</li>
+            </ul>
+        `;
+
+        configContent.innerHTML = configUI;
+
+        // Fetch and append GitHub Pages configuration
+        try {
+            const pagesData = await getGitHubPages(owner, repoName);
+            const ul = configContent.querySelector('ul');
+            const li = document.createElement('li');
+            li.style.marginTop = '16px';
+            li.style.paddingTop = '16px';
+            li.style.borderTop = '1px solid #eaecef';
+
+            if (pagesData && pagesData.html_url) {
+                li.innerHTML = `<strong>GitHub Pages:</strong> <a href="${pagesData.html_url}" target="_blank" rel="noopener noreferrer">${pagesData.html_url} <span aria-hidden="true">↗</span></a>`;
+            } else {
+                li.innerHTML = `<strong>GitHub Pages:</strong> <span style="color: #d9534f; font-weight: 500;">Not configured</span>`;
+            }
+            ul.appendChild(li);
+        } catch (pagesErr) {
+            console.warn("Failed to fetch GitHub Pages status:", pagesErr);
+            // Optionally, we could append an error message, but continuing silently is okay too.
+        }
+
+    } catch (err) {
+        console.error("Error fetching repo config:", err);
+        configContent.innerHTML = `<p class="error-text">Error loading configuration: ${err.message}</p>`;
     }
 }
 
@@ -251,6 +320,7 @@ function restoreStepState() {
         if (elements.forkForm) elements.forkForm.classList.add('hidden');
         if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
         if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
+        if (elements.repoChoicesContainer) elements.repoChoicesContainer.classList.add('hidden');
 
         // Show success state
         if (elements.step2Success) {
@@ -266,9 +336,21 @@ function restoreStepState() {
                 elements.newRepoLink.href = `https://github.com/${STATE.targetRepo}`;
             }
 
-            // Restore File Tree (if empty)
-            if (elements.repoFileTree && !elements.repoFileTree.textContent.trim()) {
-                renderRepoFileTree(owner, repoName);
+            // Restore Config or File Tree
+            if (STATE.isExistingRepo) {
+                if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.add('hidden');
+
+                if (elements.repoConfigContainer) elements.repoConfigContainer.classList.remove('hidden');
+                if (elements.repoConfigContent && !elements.repoConfigContent.innerHTML.trim()) {
+                    renderRepoConfig(owner, repoName);
+                }
+            } else {
+                if (elements.repoConfigContainer) elements.repoConfigContainer.classList.add('hidden');
+
+                if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.remove('hidden');
+                if (elements.repoFileTree && !elements.repoFileTree.textContent.trim()) {
+                    renderRepoFileTree(owner, repoName);
+                }
             }
         }
     }

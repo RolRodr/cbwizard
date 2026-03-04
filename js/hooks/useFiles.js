@@ -6,6 +6,7 @@ import { updateUI, showError, clearError, renderImagePreview, renderValidationBa
 import { parseCSV, renderCSVTable } from '../utils/csv.js';
 import { validateCsvFilename } from '../validation.js';
 import { enableDropZone } from '../utils/dragdrop.js';
+import { showWizardLoading, hideWizardLoading } from '../loading.js';
 
 // ─────── File / CSV / Image Logic ───────
 
@@ -254,6 +255,7 @@ export function registerFileListeners() {
                 // 1. Upload CSV
                 const csvFileName = STATE.csvFile.name || 'data.csv';
                 elements.publishBtn.textContent = 'Uploading CSV metadata...';
+                showWizardLoading('The wizard is uploading your CSV metadata to the cloud...');
                 await uploadCSVToGitHub(STATE.csvFile.content, csvFileName);
                 updateProgress('CSV metadata uploaded');
 
@@ -263,6 +265,7 @@ export function registerFileListeners() {
                     for (const file of STATE.mediaFiles) {
                         count++;
                         const label = `Uploading media ${count}/${mediaCount}: ${file.name}`;
+                        showWizardLoading(`The wizard is conjuring media ${count}/${mediaCount}: ${file.name}`);
                         elements.publishBtn.textContent = label;
                         await uploadMediaToGitHub(file);
                         updateProgress(label);
@@ -271,6 +274,7 @@ export function registerFileListeners() {
 
                 // 3. Update _config.yml
                 elements.publishBtn.textContent = 'Updating site configuration...';
+                showWizardLoading('The wizard is updating the site configuration...');
                 try {
                     await updateConfigYml(owner, repoName);
                 } catch (configErr) {
@@ -282,6 +286,7 @@ export function registerFileListeners() {
                 const featuredId = elements.configFeaturedImage ? elements.configFeaturedImage.value : '';
                 if (featuredId) {
                     elements.publishBtn.textContent = 'Setting featured image...';
+                    showWizardLoading('The wizard is setting the featured image...');
                     try {
                         await updateThemeYml(owner, repoName, featuredId);
                     } catch (themeErr) {
@@ -291,6 +296,7 @@ export function registerFileListeners() {
 
                 // 4. Enable GitHub Pages
                 elements.publishBtn.textContent = 'Enabling GitHub Pages...';
+                showWizardLoading('The wizard is enabling GitHub Pages...');
                 const pagesResult = await enableGitHubPages(owner, repoName);
                 if (pagesResult && pagesResult.error) {
                     console.warn('GitHub Pages auto-enable failed:', pagesResult.error);
@@ -302,6 +308,7 @@ export function registerFileListeners() {
                 STATE.maxStep = Math.max(STATE.maxStep, 6);
                 localStorage.setItem('gh_wizard_published', 'true');
                 if (progressContainer) progressContainer.classList.add('hidden');
+                await hideWizardLoading();
                 showPublishSuccess();
                 updateUI();
             } catch (error) {
@@ -309,12 +316,20 @@ export function registerFileListeners() {
                 elements.publishBtn.textContent = originalText;
                 elements.publishBtn.disabled = false;
                 if (progressContainer) progressContainer.classList.add('hidden');
+                await hideWizardLoading();
+
+                // Specifically re-open the file upload content so the user isn't stuck empty
+                const activeStep = document.querySelector('.wizard-step:not(.hidden)');
+                if (activeStep) {
+                    const stepContent = activeStep.querySelector('.step-content');
+                    if (stepContent) stepContent.classList.remove('hidden');
+                }
             }
         });
     }
 }
 
-/** Prepares Step 5 by auto-populating config fields and the publish summary. */
+/** Prepares Step 5 by auto-populating config fields and the publish summary */
 function prepareConfigStep() {
     // Auto-populate config metadata filename from CSV
     if (STATE.csvFile && STATE.csvFile.name && elements.configMetadata) {
@@ -365,7 +380,7 @@ function prepareConfigStep() {
 // Track active polling interval so it can be cleared on reset
 let _liveCheckInterval = null;
 
-/** Renders the publish success view with links and starts live-site polling. */
+/** Renders the publish success view with links and starts live-site polling */
 export function showPublishSuccess() {
     const repoUrl = `https://github.com/${STATE.targetRepo}`;
     const owner = STATE.targetRepo.split('/')[0];
@@ -382,7 +397,7 @@ export function showPublishSuccess() {
     repoLink.href = repoUrl;
     repoLink.target = '_blank';
     repoLink.className = 'primary-link';
-    repoLink.textContent = 'View Repository \u2197';
+    repoLink.textContent = 'View Repository';
     wrapper.appendChild(repoLink);
 
     const note = document.createElement('p');

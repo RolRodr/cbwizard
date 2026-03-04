@@ -63,6 +63,7 @@ async function loadState() {
 
     STATE.templateRepo = localStorage.getItem('gh_wizard_template') || STATE.templateRepo;
     STATE.targetRepo = localStorage.getItem('gh_wizard_target');
+    STATE.isExistingRepo = localStorage.getItem('gh_wizard_is_existing') === 'true';
 
     // Restore files from IndexedDB
     try {

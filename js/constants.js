@@ -8,6 +8,7 @@ export const STATE = {
     user: null, // { login: "username", ... }
     templateRepo: "CollectionBuilder/collectionbuilder-gh", // Hardcoded default
     targetRepo: null, // "username/repo"
+    isExistingRepo: false, // true if modifying an existing repository
     csvFile: null, // { name, type, content, path }
     mediaFiles: [], // [{ name, type, content (base64), path }]
     currentStep: 0,

@@ -72,6 +72,7 @@ export async function saveState() {
     }
     if (STATE.templateRepo) localStorage.setItem('gh_wizard_template', STATE.templateRepo);
     if (STATE.targetRepo) localStorage.setItem('gh_wizard_target', STATE.targetRepo);
+    localStorage.setItem('gh_wizard_is_existing', STATE.isExistingRepo);
 }
 
 /** Clears all persisted state from localStorage and IndexedDB, resets STATE. */
@@ -85,6 +86,7 @@ export function clearState() {
     STATE.user = null;
     STATE.templateRepo = 'CollectionBuilder/collectionbuilder-gh';
     STATE.targetRepo = null;
+    STATE.isExistingRepo = false;
     STATE.csvFile = null;
     STATE.mediaFiles = [];
     STATE.currentStep = 0;
