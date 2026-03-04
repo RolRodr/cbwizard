@@ -40,4 +40,4 @@ For the full details, see [PRIVACY.md](PRIVACY.md).
 - More Exhibit customization options
 - Ability to commit individual customizations
 
-Let me know if you have any other suggestions writing up an issue
+Let me know if you have any other suggestions by writing up an issue or submitting a pull request.
