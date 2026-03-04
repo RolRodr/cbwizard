@@ -35,8 +35,9 @@ For the full details, see [PRIVACY.md](PRIVACY.md).
 
 
 ## Potential Improvements
-- Option to use the Google Sheets Template with a different walk through
+- Option to use the CSV Template with modified walkthrough
 - Edit CSV in browser
 - More Exhibit customization options
+- Ability to commit individual customizations
 
 Let me know if you have any other suggestions writing up an issue
