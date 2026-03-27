@@ -5,19 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';
-                   script-src  'self';
-                   style-src   'self' 'unsafe-inline';
-                   style-src-attr 'self' 'unsafe-inline';
-                   img-src     'self' https://avatars.githubusercontent.com data:;
-                   connect-src 'self' https://api.github.com https://raw.githubusercontent.com;
+                   script-src  'self' 'sha256-ZswfTY7H35rbv8WC7NXBoiC7WNu86vSzCDChNWwZZDM=' 'sha256-2mlE6EhCXkEZcKJC1f9x59wS2OjrYxqLJNuvrJ0WvVk=' https://cdnjs.cloudflare.com https://unpkg.com;
+                   style-src   'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+                   img-src     'self' https://avatars.githubusercontent.com https://raw.githubusercontent.com https: data: blob:;
+                   connect-src 'self' https://api.github.com https://raw.githubusercontent.com https://docs.google.com https://*.googleusercontent.com https://unpkg.com;
+                   worker-src  'self' blob: https://cdnjs.cloudflare.com;
                    font-src    'self';
                    frame-src   https://*.github.io;
                    object-src  'none';
                    base-uri    'self';
-                   form-action 'self';">
+                   form-action 'self';
+                   ">
     <title>CB Wizard</title>
     <meta name="description" content="A simple webapp that allows you to easily create your CollectionBuilder project!">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf_viewer.min.css">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 
@@ -31,19 +33,23 @@
         <div data-partial="partials/nav.html"></div>
 
         <main id="wizard-container">
-            <div data-partial="partials/step-0-welcome.html"></div>
-            <div data-partial="partials/step-1-connect.html"></div>
-            <div data-partial="partials/step-2-fork.html"></div>
-            <div data-partial="partials/step-3-csv.html"></div>
-            <div data-partial="partials/step-4-media.html"></div>
-            <div data-partial="partials/step-5-publish.html"></div>
-            <div data-partial="partials/step-6-published.html"></div>
+            <div data-partial="partials/welcome.html"></div>
+            <div data-partial="partials/connect.html"></div>
+            <div data-partial="partials/fork.html"></div>
+            <div data-partial="partials/csv.html"></div>
+            <div data-partial="partials/media.html"></div>
+            <div data-partial="partials/publish.html"></div>
+            <div data-partial="partials/published.html"></div>
         </main>
+
+        <div data-partial="partials/repo-sidebar.html"></div>
 
     </div>
 
     <div id="global-error" class="error-message hidden" role="alert" aria-live="assertive"></div>
     <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <div data-partial="partials/csv-preview-modal.html"></div>
 
     <div data-partial="partials/footer.html"></div>
 
@@ -56,6 +62,11 @@
         </div>
     </template>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
+    </script>
     <script type="module" src="js/main.js"></script>
 </body>
 

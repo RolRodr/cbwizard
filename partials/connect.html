@@ -1,0 +1,76 @@
+<section id="connect-section" class="wizard-step hidden">
+    <h2>Connect to GitHub</h2>
+    <p class="step-subtitle">Authenticate with your GitHub account to get started.</p>
+    <form id="auth-form">
+        <div style="margin-bottom: 1rem;">
+            <span>
+                Please enter your Personal Access Token
+            </span>
+            <details class="info-details">
+                <summary aria-label="What is a Personal Access Token?" title="What is a PAT?">i</summary>
+                <div class="info-popup">
+                    A Personal Access Token (PAT) is like a secure, temporary password created specifically for this
+                    app. It allows the app to perform actions on your GitHub account safely without needing your actual
+                    login password.
+                </div>
+            </details>
+            <br>
+            <span>
+                <strong>The token requires <code>repo</code> scope to fork and write to repositories.</strong>
+            </span>
+        </div>
+        <details class="instructions">
+            <summary>How to create a Personal Access Token (Classic)</summary>
+            <div class="info-message">
+                <strong>Note:</strong> We recommend using a <strong>Classic Token</strong> because
+                Fine-grained tokens currently have API limitations when forking public repositories you
+                don't
+                own.
+            </div>
+            <ol>
+                <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer">GitHub
+                        Settings &gt; Developer Settings &gt; Tokens
+                        (Classic)
+                        <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i><span class="sr-only"> (opens in a new
+                            tab)</span></a>.
+                </li>
+                <li>Click "Generate new token (classic)".</li>
+                <li>Give it a Note (e.g., "Wizard App").</li>
+                <li>Select the <code>repo</code> scope (Full control of private repositories).
+                    <ul>
+                        <li>Required to fork the template and push content.</li>
+                    </ul>
+                </li>
+                <li>Click "Generate token" and copy it here.</li>
+            </ol>
+        </details>
+        <label for="github-token">Personal Access Token:</label>
+        <input type="password" id="github-token" required autocomplete="current-password">
+        <div class="warning privacy-banner">
+            Don't worry. Your token is only ever stored in your browser.<br>
+            <a href="https://github.com/RolRodr/cbwizard/blob/main/PRIVACY.md" target="_blank">Learn how
+                CB Wizard handles privacy.</a>
+        </div>
+        <button type="submit" id="connect-btn">Connect</button>
+    </form>
+
+    <div id="user-confirmation" class="hidden">
+        <div class="user-confirm-reveal">
+            <div class="user-confirm-identity">
+                <img id="user-avatar" src="" alt="" width="88" height="88" class="user-confirm-avatar">
+                <div class="user-confirm-names">
+                    <span id="confirm-displayname" class="user-confirm-displayname"></span>
+                    <span id="confirm-username" class="user-confirm-username"></span>
+                </div>
+            </div>
+            <p class="user-confirm-question">Is this you?</p>
+            <div class="user-confirm-actions">
+                <button id="confirm-user-btn" class="user-confirm-action-btn user-confirm-action-btn--yes">Yup!</button>
+                <button id="cancel-user-btn" class="user-confirm-action-btn user-confirm-action-btn--no">That's not me</button>
+            </div>
+        </div>
+        <!-- keep hidden elements so JS references don't break -->
+        <span id="confirm-bio" style="display:none"></span>
+        <span id="confirm-repos" style="display:none"></span>
+    </div>
+</section>

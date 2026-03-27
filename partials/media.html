@@ -1,0 +1,35 @@
+<section id="media-section" class="wizard-step hidden">
+    <h2>Media Files <span class="step-optional">(Optional)</span></h2>
+    <p class="step-subtitle">Add images, audio, or PDF files to your collection.</p>
+    <p>Select media files for your collection (Images, Audio, PDF). Ideally, use URLs for large files in
+        your CSV because GitHub
+        has strict limits on file sizes. <strong>Files must not exceed 10 MB each.</strong></p>
+    <label for="image-files">Select Media:</label>
+    <p id="media-file-hint" class="field-hint">Accepted formats: JPEG, PNG, MP3, PDF. Each file must be under 10 MB.</p>
+    <input type="file" id="image-files" accept="image/*,audio/*,application/pdf" multiple
+        aria-describedby="media-file-hint">
+    <div id="image-preview" class="preview-container hidden"></div>
+
+    <div id="derivatives-section" class="derivatives-card hidden"
+        style="margin-top: 24px; padding: 16px; border: 1px solid var(--border-color); border-radius: 6px; background: #f6f8fa;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <input type="checkbox" id="derivatives-toggle" style="margin-top: 4px;">
+            <div>
+                <label for="derivatives-toggle"
+                    style="font-weight: 600; display: block; margin-bottom: 4px; cursor: pointer;">Generate image
+                    derivatives (thumb &amp; small)</label>
+                <p style="margin: 0; font-size: 14px; color: var(--text-color);">CollectionBuilder-CSV requires small
+                    preview images. Check this to automatically generate them from your uploaded images and update your
+                    CSV.</p>
+            </div>
+        </div>
+        <div id="derivatives-status" class="hidden" style="margin-top: 16px; font-size: 14px; font-weight: 500;"></div>
+    </div>
+
+    <div class="info-message" style="margin-top: 16px;">Media files will be uploaded when you publish in the final step.
+    </div>
+    <div id="step-4-buttons" style="margin-top: 16px;">
+        <button id="step-4-next">Next: Configure &amp; Publish</button>
+        <button id="step-4-skip" class="secondary">Skip Media</button>
+    </div>
+</section>
