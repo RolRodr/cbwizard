@@ -125,9 +125,9 @@ function validateFilename(row, rowIndex, colMap, report, formatVal) {
     const key = `${rowIndex},${idx}`;
 
     if (!val) {
-        // If record, filename is optional (external link), but usually expected unless strictly metadata-only
+        // Filename is recommended but not required; missing is a warning not an error
         if (formatVal !== 'record') {
-            report.set(key, { type: 'error', msg: 'Missing filename.' });
+            report.set(key, { type: 'warning', msg: 'Missing filename (recommended for non-record items).' });
         }
     } else {
         if (val.startsWith('http://')) {

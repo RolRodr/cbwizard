@@ -4,17 +4,17 @@
 /** Returns an array of all wizard step DOM elements. */
 export function getSteps() {
     return [
-        document.getElementById('step-0'), // Welcome
-        document.getElementById('step-1'), // Connect (was 0)
-        document.getElementById('step-2'), // Fork (was 1)
-        document.getElementById('step-3'), // CSV (was 2)
-        document.getElementById('step-4'), // Images (was 3)
-        document.getElementById('step-5'), // Adjust Configuration (was 4)
-        document.getElementById('step-6')  // Success (was 5)
+        document.getElementById('welcome-section'),
+        document.getElementById('connect-section'),
+        document.getElementById('fork-section'),
+        document.getElementById('csv-section'),
+        document.getElementById('media-section'),
+        document.getElementById('publish-section'),
+        document.getElementById('published-section')
     ];
 }
 
-export const elements = {
+export const ELEMENTS = {
     // Step 0
     get startBtn() { return document.getElementById('start-btn'); },
 
@@ -64,8 +64,8 @@ export const elements = {
     get reposError() { return document.getElementById('repos-error'); },
     get reposList() { return document.getElementById('repos-list'); },
 
-    // Step 2 Success
-    get step2Success() { return document.getElementById('step-2-success'); },
+    // Repository Section Success
+    get repositorySuccess() { return document.getElementById('step-2-success'); },
     get selectedRepoName() { return document.getElementById('selected-repo-name'); },
     get repoFileTreeContainer() { return document.getElementById('repo-file-tree-container'); },
     get repoFileTree() { return document.getElementById('repo-file-tree'); },
@@ -73,14 +73,32 @@ export const elements = {
     get repoConfigContent() { return document.getElementById('repo-config-content'); },
     get newRepoLink() { return document.getElementById('new-repo-link'); },
     get changeRepoBtn() { return document.getElementById('change-repo-btn'); },
-    get step2Next() { return document.getElementById('step-2-next'); },
+    get repositoryNext() { return document.getElementById('step-2-next'); },
 
-    // Step 3: CSV Input and Preview
+    // Step 3: CSV Input and Status Card
+    get step3InfoView() { return document.getElementById('step-3-info-view'); },
+    get proceedToUploadBtn() { return document.getElementById('proceed-to-upload-btn'); },
+    get step3UploadView() { return document.getElementById('step-3-upload-view'); },
+    get backToInfoBtn() { return document.getElementById('back-to-info-btn'); },
+    get csvUploadChoicesContainer() { return document.getElementById('csv-upload-choices-container'); },
+    get choiceUploadCsv() { return document.getElementById('choice-upload-csv'); },
+    get choiceRepoCsv() { return document.getElementById('choice-repo-csv'); },
+    get choiceGoogleSheets() { return document.getElementById('choice-google-sheets'); },
+
+    get uploadCsvSection() { return document.getElementById('upload-csv-section'); },
+    get repoCsvPicker() { return document.getElementById('repo-csv-picker'); },
+    get googleSheetsSection() { return document.getElementById('google-sheets-section'); },
+
+    get backToUploadChoicesBtn1() { return document.getElementById('back-to-upload-choices-btn-1'); },
+    get backToUploadChoicesBtn2() { return document.getElementById('back-to-upload-choices-btn-2'); },
+    get backToUploadChoicesBtn3() { return document.getElementById('back-to-upload-choices-btn-3'); },
+
     get csvInput() { return document.getElementById('csv-file'); },
-    get csvPreview() { return document.getElementById('csv-preview'); },
-    get csvTable() { return document.getElementById('csv-table'); },
     get csvUploadControls() { return document.getElementById('csv-upload-controls'); },
     get csvFilenameInput() { return document.getElementById('csv-filename'); },
+    get csvStatusFilename() { return document.getElementById('csv-status-filename'); },
+    get csvStatusBadge() { return document.getElementById('csv-status-badge'); },
+    get csvReviewBtn() { return document.getElementById('csv-review-btn'); },
     get step3Next() { return document.getElementById('step-3-next'); },
     // Step 3: Demo CSV Preview
     get demoCsvLoading() { return document.getElementById('demo-csv-loading'); },
@@ -88,11 +106,22 @@ export const elements = {
     get demoCsvTableWrap() { return document.getElementById('demo-csv-table-wrap'); },
     get demoCsvTable() { return document.getElementById('demo-csv-table'); },
 
+    // CSV Validation Modal
+    get csvModal() { return document.getElementById('csv-modal'); },
+    get csvModalTable() { return document.getElementById('csv-modal-table'); },
+    get csvModalSaveBtn() { return document.getElementById('csv-modal-save'); },
+    get csvModalCancelBtn() { return document.getElementById('csv-modal-cancel'); },
+
     // Step 4: Media Files
     get imageInput() { return document.getElementById('image-files'); },
     get imagePreview() { return document.getElementById('image-preview'); },
     get step4Next() { return document.getElementById('step-4-next'); },
     get step4Skip() { return document.getElementById('step-4-skip'); },
+
+    // Step 4: Derivatives
+    get derivativesSection() { return document.getElementById('derivatives-section'); },
+    get derivativesToggle() { return document.getElementById('derivatives-toggle'); },
+    get derivativesStatus() { return document.getElementById('derivatives-status'); },
 
     // Step 5: Configure & Publish
     get publishBtn() { return document.getElementById('publish-btn'); },
@@ -109,7 +138,7 @@ export const elements = {
 
     // Step 6: Published
     get publishLinks() { return document.getElementById('publish-links'); },
-    get resetBtn() { return document.getElementById('reset-app-btn'); },
+    get resetAppBtn() { return document.getElementById('reset-app-btn'); },
 
     // Layout
     get appLayout() { return document.getElementById('app-layout'); },
@@ -120,4 +149,22 @@ export const elements = {
 
     // Global Loading Overlay
     get wizardLoadingTemplate() { return document.getElementById('wizard-loading-template'); },
+
+    // Repo Sidebar
+    get repoSidebar() { return document.getElementById('repo-sidebar'); },
+    get sidebarRepoName() { return document.getElementById('sidebar-repo-name'); },
+    get sidebarRepoLink() { return document.getElementById('sidebar-repo-link'); },
+    get sidebarForkSource() { return document.getElementById('sidebar-fork-source'); },
+    get sidebarConfigTitle() { return document.getElementById('sidebar-config-title'); },
+    get sidebarConfigTagline() { return document.getElementById('sidebar-config-tagline'); },
+    get sidebarConfigMetadata() { return document.getElementById('sidebar-config-metadata'); },
+    get sidebarCsvStatus() { return document.getElementById('sidebar-csv-status'); },
+    get sidebarCsvPreviewBtn() { return document.getElementById('sidebar-csv-preview-btn'); },
+    get sidebarMediaCount() { return document.getElementById('sidebar-media-count'); },
+    get sidebarPagesStatus() { return document.getElementById('sidebar-pages-status'); },
+
+    // Global Modals
+    get csvPreviewOverlay() { return document.getElementById('csv-preview-overlay'); },
+    get csvPreviewClose() { return document.getElementById('csv-preview-close'); },
+    get csvPreviewTableContainer() { return document.getElementById('csv-preview-table-container'); },
 };

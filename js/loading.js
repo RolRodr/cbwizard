@@ -1,4 +1,4 @@
-import { elements } from './elements.js';
+import { ELEMENTS } from './elements.js';
 
 let showTime = 0;
 let hideTimeout = null;
@@ -27,7 +27,7 @@ export function showWizardLoading(message = "The wizard is conjuring...") {
         showTime = Date.now();
 
         // Instantiate template
-        const template = elements.wizardLoadingTemplate;
+        const template = ELEMENTS.wizardLoadingTemplate;
         if (!template) return;
 
         const clone = template.content.cloneNode(true);

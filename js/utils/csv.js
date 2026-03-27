@@ -1,5 +1,5 @@
 /**
- * Shared CSV utilities used by useDemoCSV.js, useFiles.js, and ui.js.
+ * Shared CSV utilities used by useDemoCSV.js, useCsvUpload.js, useConfigStep.js, and ui.js.
  */
 
 /** Parses CSV text into a 2D array of rows and columns (RFC 4180 compliant). */
@@ -99,4 +99,18 @@ export function renderCSVTable(csvText, tableEl, shouldValidate = true) {
         }
     }
     return { hasErrors, validationReport, header: rows[0] };
+}
+
+/** Converts a 2D array of rows/columns back into a CSV string (RFC 4180). */
+export function serializeCSV(rows) {
+    return rows.map(row =>
+        row.map(cell => {
+            const val = cell == null ? '' : String(cell);
+            // Quote the field if it contains a comma, quote, or newline
+            if (val.includes(',') || val.includes('"') || val.includes('\n') || val.includes('\r')) {
+                return '"' + val.replace(/"/g, '""') + '"';
+            }
+            return val;
+        }).join(',')
+    ).join('\n');
 }
