@@ -3,26 +3,30 @@
  */
 
 import { STATE } from './constants.js';
-import { elements } from './elements.js';
+import { ELEMENTS } from './elements.js';
 import { initDB, getAllFilesFromDB } from './storage.js';
 import { decryptToken } from './utils/crypto.js';
 import { authenticate, registerAuthListeners } from './hooks/useAuth.js';
 import { registerForkListeners } from './hooks/useFork.js';
 import { registerExistingForkListeners } from './hooks/useExistingFork.js';
-import { registerFileListeners, handleMediaDelete, showPublishSuccess } from './hooks/useFiles.js';
+import { registerMediaListeners, handleMediaDelete } from './hooks/useMedia.js';
+import { registerCsvUploadListeners } from './hooks/useCsvUpload.js';
+import { registerPublishListeners, showPublishSuccess } from './hooks/usePublish.js';
 import { updateUI, initSidebarNav, renderImagePreview } from './ui.js';
 import { initAboutModal } from './hooks/useAboutModal.js';
+import { initCsvModal } from './hooks/useCsvModal.js';
 import { loadPartials } from './utils/loadPartials.js';
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPartials();
+    window.lucide?.createIcons();
     await initDB();
     await loadState();
 
     // Welcome Step Listener
-    if (elements.startBtn) {
-        elements.startBtn.addEventListener('click', () => {
+    if (ELEMENTS.startBtn) {
+        ELEMENTS.startBtn.addEventListener('click', () => {
             STATE.currentStep = 1;
             STATE.maxStep = Math.max(STATE.maxStep, 1);
             updateUI();
@@ -32,9 +36,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     registerAuthListeners();
     registerForkListeners();
     registerExistingForkListeners();
-    registerFileListeners();
+    registerCsvUploadListeners();
+    registerMediaListeners();
+    registerPublishListeners();
     initAboutModal();
+    initCsvModal();
     initSidebarNav();
+    initCsvPreviewModal();
 
     // If we restored to the Published step, render the success view
     if (STATE.currentStep === 6) {
@@ -99,4 +107,72 @@ async function loadState() {
     }
 
     STATE.maxStep = Math.max(STATE.currentStep, STATE.maxStep);
+}
+
+// ── Global CSV Preview Modal ──
+export function initCsvPreviewModal() {
+    // Use event delegation for the preview button in case the sidebar is rendered dynamically
+    document.addEventListener('click', async (e) => {
+        const previewBtn = e.target.closest('#sidebar-csv-preview-btn');
+        if (previewBtn) {
+            e.preventDefault();
+            let csvContentToRender = null;
+
+            if (STATE.csvFile && STATE.csvFile.content) {
+                csvContentToRender = STATE.csvFile.content;
+            } else if (STATE.googleSheetUrl) {
+                try {
+                    if (ELEMENTS.csvPreviewTableContainer) ELEMENTS.csvPreviewTableContainer.innerHTML = '<div style="padding: 24px;">Fetching Google Sheet data...</div>';
+                    if (ELEMENTS.csvPreviewOverlay) ELEMENTS.csvPreviewOverlay.classList.remove('hidden');
+
+                    const response = await fetch(STATE.googleSheetUrl);
+                    if (response.ok) {
+                        const text = await response.text();
+                        if (!text.trim().startsWith('<!DOCTYPE html>')) {
+                            csvContentToRender = text;
+                        } else {
+                            throw new Error("Received HTML instead of valid CSV data (double-check the Publish URL).");
+                        }
+                    } else {
+                        throw new Error(`Failed to fetch Google Sheet: ${response.statusText}`);
+                    }
+                } catch (err) {
+                    if (ELEMENTS.csvPreviewTableContainer) ELEMENTS.csvPreviewTableContainer.innerHTML = `<div style="padding: 24px; color: var(--error-color);">Error fetching sheet: ${err.message}</div>`;
+                    return;
+                }
+            }
+
+            if (csvContentToRender) {
+                // We need to import renderCSVTable to show it
+                const { renderCSVTable } = await import('./utils/csv.js');
+
+                // Clear out previous
+                if (ELEMENTS.csvPreviewTableContainer) ELEMENTS.csvPreviewTableContainer.innerHTML = '';
+
+                // Render table
+                renderCSVTable(csvContentToRender, ELEMENTS.csvPreviewTableContainer);
+
+                // Show modal
+                if (ELEMENTS.csvPreviewOverlay) ELEMENTS.csvPreviewOverlay.classList.remove('hidden');
+            }
+        }
+    });
+
+    // Close button delegation
+
+    if (ELEMENTS.csvPreviewClose) {
+        ELEMENTS.csvPreviewClose.addEventListener('click', () => {
+            if (ELEMENTS.csvPreviewOverlay) ELEMENTS.csvPreviewOverlay.classList.add('hidden');
+            if (ELEMENTS.csvPreviewTableContainer) ELEMENTS.csvPreviewTableContainer.innerHTML = '';
+        });
+    }
+
+    if (ELEMENTS.csvPreviewOverlay) {
+        ELEMENTS.csvPreviewOverlay.addEventListener('click', (e) => {
+            if (e.target === ELEMENTS.csvPreviewOverlay) {
+                ELEMENTS.csvPreviewOverlay.classList.add('hidden');
+                if (ELEMENTS.csvPreviewTableContainer) ELEMENTS.csvPreviewTableContainer.innerHTML = '';
+            }
+        });
+    }
 }

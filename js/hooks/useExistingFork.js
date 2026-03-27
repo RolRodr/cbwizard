@@ -1,5 +1,5 @@
 import { STATE } from '../constants.js';
-import { elements } from '../elements.js';
+import { ELEMENTS } from '../elements.js';
 import { fetchUserRepos, getRepoReadme } from '../api.js';
 import { updateUI, showError, renderRepoConfig } from '../ui.js';
 import { saveState } from '../storage.js';
@@ -7,22 +7,22 @@ import { showWizardLoading, hideWizardLoading } from '../loading.js';
 
 /** Registers event listeners for browsing and selecting existing repositories. */
 export function registerExistingForkListeners() {
-    if (elements.choiceModifyExisting) {
-        elements.choiceModifyExisting.addEventListener('click', (e) => {
+    if (ELEMENTS.choiceModifyExisting) {
+        ELEMENTS.choiceModifyExisting.addEventListener('click', (e) => {
             e.preventDefault();
             showExistingRepos();
         });
     }
 
-    if (elements.showExistingReposBtn) {
-        elements.showExistingReposBtn.addEventListener('click', (e) => {
+    if (ELEMENTS.showExistingReposBtn) {
+        ELEMENTS.showExistingReposBtn.addEventListener('click', (e) => {
             e.preventDefault();
             showExistingRepos();
         });
     }
 
-    if (elements.backToForkBtn) {
-        elements.backToForkBtn.addEventListener('click', (e) => {
+    if (ELEMENTS.backToForkBtn) {
+        ELEMENTS.backToForkBtn.addEventListener('click', (e) => {
             e.preventDefault();
             showChoicesMenu();
         });
@@ -45,38 +45,38 @@ export function registerExistingForkListeners() {
 
 /** Shows the choices menu and hides the existing repos list and fork form. */
 function showChoicesMenu() {
-    if (elements.repoChoicesContainer) elements.repoChoicesContainer.classList.remove('hidden');
-    if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
-    if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
+    if (ELEMENTS.repoChoicesContainer) ELEMENTS.repoChoicesContainer.classList.remove('hidden');
+    if (ELEMENTS.forkOptionsContainer) ELEMENTS.forkOptionsContainer.classList.add('hidden');
+    if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.add('hidden');
 
     // Explicitly hide success containers
-    if (elements.step2Success) elements.step2Success.classList.add('hidden');
-    if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.add('hidden');
-    if (elements.repoConfigContainer) elements.repoConfigContainer.classList.add('hidden');
+    if (ELEMENTS.repositorySuccess) ELEMENTS.repositorySuccess.classList.add('hidden');
+    if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.add('hidden');
+    if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.add('hidden');
 }
 
 /** Shows the fork creation options and hides the existing repos list. */
 function showForkOptions() {
-    if (elements.repoChoicesContainer) elements.repoChoicesContainer.classList.add('hidden');
-    if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.remove('hidden');
-    if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
+    if (ELEMENTS.repoChoicesContainer) ELEMENTS.repoChoicesContainer.classList.add('hidden');
+    if (ELEMENTS.forkOptionsContainer) ELEMENTS.forkOptionsContainer.classList.remove('hidden');
+    if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.add('hidden');
 
     // Explicitly hide success containers
-    if (elements.step2Success) elements.step2Success.classList.add('hidden');
-    if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.add('hidden');
-    if (elements.repoConfigContainer) elements.repoConfigContainer.classList.add('hidden');
+    if (ELEMENTS.repositorySuccess) ELEMENTS.repositorySuccess.classList.add('hidden');
+    if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.add('hidden');
+    if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.add('hidden');
 }
 
 /** Hides fork options and displays the existing repositories list. */
 async function showExistingRepos() {
-    if (elements.repoChoicesContainer) elements.repoChoicesContainer.classList.add('hidden');
-    if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
-    if (elements.existingReposContainer) elements.existingReposContainer.classList.remove('hidden');
+    if (ELEMENTS.repoChoicesContainer) ELEMENTS.repoChoicesContainer.classList.add('hidden');
+    if (ELEMENTS.forkOptionsContainer) ELEMENTS.forkOptionsContainer.classList.add('hidden');
+    if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.remove('hidden');
 
     // Explicitly hide success containers
-    if (elements.step2Success) elements.step2Success.classList.add('hidden');
-    if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.add('hidden');
-    if (elements.repoConfigContainer) elements.repoConfigContainer.classList.add('hidden');
+    if (ELEMENTS.repositorySuccess) ELEMENTS.repositorySuccess.classList.add('hidden');
+    if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.add('hidden');
+    if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.add('hidden');
 
     // Load repos if not already loaded or if we want to refresh
     await loadRepos();
@@ -84,9 +84,9 @@ async function showExistingRepos() {
 
 /** Fetches and renders the user's repositories into the repos list. */
 async function loadRepos() {
-    const listContainer = elements.reposList;
-    const loadingObj = elements.reposLoading;
-    const errorObj = elements.reposError;
+    const listContainer = ELEMENTS.reposList;
+    const loadingObj = ELEMENTS.reposLoading;
+    const errorObj = ELEMENTS.reposError;
 
     if (!listContainer) return;
 
@@ -99,7 +99,7 @@ async function loadRepos() {
         await hideWizardLoading();
 
         // Restore container visibility after loading finishes
-        if (elements.existingReposContainer) elements.existingReposContainer.classList.remove('hidden');
+        if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.remove('hidden');
 
         if (repos.length === 0) {
             errorObj.textContent = "No repositories found.";
@@ -113,7 +113,7 @@ async function loadRepos() {
 
     } catch (err) {
         await hideWizardLoading();
-        if (elements.existingReposContainer) elements.existingReposContainer.classList.remove('hidden');
+        if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.remove('hidden');
         errorObj.textContent = `Error loading repositories: ${err.message}`;
         errorObj.classList.remove('hidden');
     }
@@ -121,7 +121,7 @@ async function loadRepos() {
 
 /** Renders a list of repository items with click-to-select behavior. */
 function renderRepos(repos) {
-    const listContainer = elements.reposList;
+    const listContainer = ELEMENTS.reposList;
     listContainer.innerHTML = '';
 
     repos.forEach(repo => {
@@ -150,8 +150,8 @@ function renderRepos(repos) {
 async function selectRepo(repo) {
     console.log('selectRepo called for:', repo.full_name);
     // Validate repo - check README for "CollectionBuilder-CSV"
-    const loadingObj = elements.reposLoading;
-    const errorObj = elements.reposError;
+    const loadingObj = ELEMENTS.reposLoading;
+    const errorObj = ELEMENTS.reposError;
 
     // Clear previous errors
     errorObj.classList.add('hidden');
@@ -170,10 +170,15 @@ async function selectRepo(repo) {
         console.log('README content length:', content.length);
 
         const lowerContent = content.toLowerCase();
+        let isCsvTemplate = false;
+        if (lowerContent.includes('collectionbuilder-csv')) {
+            isCsvTemplate = true;
+        }
+
         if (lowerContent.includes('collectionbuilder')) {
             console.log('Validation successful!');
             await hideWizardLoading();
-            await handleValidRepo(repo);
+            await handleValidRepo(repo, isCsvTemplate);
         } else {
             console.warn('Validation failed: CollectionBuilder string not found in README');
             throw new Error("Repository does not appear to be a CollectionBuilder project (README check failed). The README must mention 'CollectionBuilder'.");
@@ -182,41 +187,50 @@ async function selectRepo(repo) {
     } catch (err) {
         console.error('Error in selectRepo:', err);
         await hideWizardLoading();
-        if (elements.existingReposContainer) elements.existingReposContainer.classList.remove('hidden');
+        if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.remove('hidden');
         errorObj.textContent = err.message;
         errorObj.classList.remove('hidden');
     }
 }
 
 /** Sets the validated repo as the target and shows the success view. */
-async function handleValidRepo(repo) {
+async function handleValidRepo(repo, isCsvTemplate = false) {
     console.log('handleValidRepo starting for:', repo.full_name);
     STATE.targetRepo = repo.full_name;
     STATE.isExistingRepo = true;
     localStorage.setItem('gh_wizard_target', repo.full_name);
 
+    if (isCsvTemplate) {
+        STATE.templateRepo = 'CollectionBuilder/collectionbuilder-csv';
+        localStorage.setItem('gh_wizard_template', STATE.templateRepo);
+    } else {
+        // Fallback for non-CSV CollectionBuilder repos
+        STATE.templateRepo = 'CollectionBuilder/collectionbuilder-gh';
+        localStorage.setItem('gh_wizard_template', STATE.templateRepo);
+    }
+
     // We must call saveState to persist the isExistingRepo boolean correctly
     await saveState();
 
     // Update UI to show success
-    if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
-    if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
+    if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.add('hidden');
+    if (ELEMENTS.forkOptionsContainer) ELEMENTS.forkOptionsContainer.classList.add('hidden');
 
-    if (elements.step2Success) {
+    if (ELEMENTS.repositorySuccess) {
         console.log('Showing success div and tree container');
-        elements.step2Success.classList.remove('hidden');
+        ELEMENTS.repositorySuccess.classList.remove('hidden');
 
         // Update Success Message
-        if (elements.selectedRepoName) elements.selectedRepoName.textContent = repo.name;
+        if (ELEMENTS.selectedRepoName) ELEMENTS.selectedRepoName.textContent = repo.name;
 
         // Update Link
-        if (elements.newRepoLink) elements.newRepoLink.href = repo.html_url;
+        if (ELEMENTS.newRepoLink) ELEMENTS.newRepoLink.href = repo.html_url;
 
         // Fetch and display repo configuration instead of file tree
         STATE.isExistingRepo = true;
         renderRepoConfig(repo.owner.login, repo.name);
     } else {
-        console.error('CRITICAL: elements.step2Success NOT FOUND in DOM');
+        console.error('CRITICAL: ELEMENTS.repositorySuccess NOT FOUND in DOM');
     }
 
     // Trigger the success state in UI

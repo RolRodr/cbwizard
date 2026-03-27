@@ -1,0 +1,303 @@
+<section id="csv-section" class="wizard-step hidden">
+    <h2>CSV Metadata</h2>
+
+    <div id="step-3-info-view">
+        <p class="step-subtitle">Upload or review the metadata for your collection.</p>
+        <p>Select a CSV metadata file for your collection. Make sure your CSV follows the required
+            format —
+            refer to the <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/"
+                target="_blank" rel="noopener noreferrer">CollectionBuilder Metadata Documentation <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i><span class="sr-only"> (opens in a new tab)</span></a> for
+            guidance
+            on required fields and formatting.</p>
+
+        <!-- Metadata field reference (from CB docs) -->
+        <details class="metadata-ref">
+            <summary>Metadata Field Reference</summary>
+            <div id="metadata-ref-content">
+
+                <h4 style="margin: 8px 0 4px; font-size: 0.9rem;">Required Fields</h4>
+                <table class="demo-table" style="font-size: 0.82rem; margin-bottom: 12px;">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>objectid</strong></td>
+                            <td>Unique identifier. Lowercase, no spaces or special characters. Underscores and dashes
+                                OK; no
+                                slashes.</td>
+                            <td><code>coll002</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>filename</strong></td>
+                            <td>Object's filename (with extension) exactly matching the file in your "objects" folder,
+                                or a
+                                full HTTPS URL to an externally hosted file. Leave blank for YouTube/Vimeo items.</td>
+                            <td><code>letter001.pdf</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>title</strong></td>
+                            <td>Short, descriptive name for the item. One title per item.</td>
+                            <td><code>Haystack Rock</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>format</strong></td>
+                            <td>Item's <a href="https://www.iana.org/assignments/media-types/media-types.xhtml"
+                                    target="_blank" rel="noopener noreferrer">MIME type</a>. Controls how objects
+                                display.
+                                Common values: <code>image/jpeg</code>, <code>image/png</code>,
+                                <code>application/pdf</code>, <code>audio/mp3</code>, <code>video/mp4</code>.
+                            </td>
+                            <td><code>image/jpeg</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin: 12px 0 4px; font-size: 0.9rem;">Fields Required for Visualizations</h4>
+                <table class="demo-table" style="font-size: 0.82rem; margin-bottom: 4px;">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Required Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Map</td>
+                            <td><strong>latitude</strong> &amp; <strong>longitude</strong> — geographic coordinates
+                                (e.g.
+                                <code>46.731643</code>, <code>-117.165625</code>)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Timeline</td>
+                            <td><strong>date</strong> — format <code>yyyy-mm-dd</code>, <code>yyyy-mm</code>, or
+                                <code>yyyy</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Subjects</td>
+                            <td><strong>subject</strong> — topic(s), separated by semicolons (e.g.
+                                <code>Dogs; Cats; Zebras</code>)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Locations</td>
+                            <td><strong>location</strong> — place name(s), separated by semicolons (e.g.
+                                <code>Pullman, Washington; Moscow, Idaho</code>)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin: 12px 0 4px; font-size: 0.9rem;">Optional (Recommended)</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li><strong>youtubeid</strong> - YouTube video ID (only for YouTube items). Leave blank for all
+                        other
+                        items.</li>
+                    <li><strong>vimeoid</strong> - Vimeo video ID (only for Vimeo items). Leave blank for all other
+                        items.
+                    </li>
+                    <li><strong>creator</strong> — entity who made the resource; semicolon-separated (e.g.
+                        <code>Smith, John; Doe, Jane</code>)
+                    </li>
+                    <li><strong>description</strong> — brief account of the item</li>
+                    <li><strong>source</strong> — related source collection (e.g.
+                        <code>PG 5, University of Idaho Library Special Collections and Archives</code>)
+                    </li>
+                    <li><strong>identifier</strong> — unique ID from the source collection</li>
+                    <li><strong>type</strong> — <a
+                            href="https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/2003-02-12/"
+                            target="_blank" rel="noopener noreferrer">DCMI Type</a> (e.g. <code>Image;StillImage</code>,
+                        <code>Text</code>, <code>Sound</code>)
+                    </li>
+                    <li><strong>language</strong> — <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php"
+                            target="_blank" rel="noopener noreferrer">ISO 639-2</a> code (e.g. <code>eng</code>,
+                        <code>fra</code>)
+                    </li>
+                    <li><strong>rights</strong> — free-text rights statement</li>
+                    <li><strong>rightsstatement</strong> — standardized rights URI from <a
+                            href="https://creativecommons.org/" target="_blank"
+                            rel="noopener noreferrer">creativecommons.org</a> or <a
+                            href="https://rightsstatements.org/en/" target="_blank"
+                            rel="noopener noreferrer">rightsstatements.org</a></li>
+                </ul>
+
+                <p
+                    style="margin-top: 10px; margin-bottom: 0; font-size: 0.82rem; color: var(--text-secondary, #57606a);">
+                    Full details: <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/"
+                        target="_blank" rel="noopener noreferrer">CollectionBuilder Metadata Docs <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i></a> &nbsp;|&nbsp;
+                    <a href="https://docs.google.com/spreadsheets/d/1Uv9ytll0hysMOH1j-VL1lZx6PWvc1zf3L35sK_4IuzI/copy?usp=sharing"
+                        target="_blank" rel="noopener noreferrer">Metadata Template (Google Sheets) <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i></a>
+                </p>
+            </div>
+        </details>
+
+        <!-- Demo metadata from the forked repo -->
+        <div id="demo-csv-section">
+            <h3>Template Demo Data <span class="field-hint" style="font-weight:400;">(from your forked
+                    repository)</span></h3>
+            <div id="demo-csv-loading" class="info-message">Loading demo metadata from your repository…</div>
+            <div id="demo-csv-error" class="hidden" style="font-size:13px; color:#57606a; margin-bottom:12px;">
+            </div>
+            <div id="demo-csv-table-wrap" class="demo-table-wrap hidden">
+                <table id="demo-csv-table" class="demo-table"></table>
+            </div>
+        </div>
+
+        <button id="proceed-to-upload-btn" type="button" style="margin-top: 24px;">Next: Uploading your metadata</button>
+    </div>
+
+    <div id="step-3-upload-view" class="hidden">
+        <button id="back-to-info-btn" class="secondary" style="margin-bottom: 16px;" type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to
+            Information</button>
+        <p class="step-subtitle" style="margin-top: 8px;">Uploading your CSV</p>
+        <p>Select how you would like to provide your CSV metadata.</p>
+
+        <!-- Choice Menu for Uploading CSV -->
+        <div id="csv-upload-choices-container" class="options-grid">
+            <button id="choice-upload-csv" class="option-card" type="button">
+                <div class="option-icon option-icon--csv" aria-hidden="true"><i data-lucide="folder-open"></i></div>
+                <h3>Upload CSV</h3>
+                <p>Upload a .csv file from your computer.</p>
+            </button>
+            <button id="choice-google-sheets" class="option-card" type="button">
+                <div class="option-icon option-icon--sheets" aria-hidden="true">GS</div>
+                <h3>Connect to Google Sheets</h3>
+                <p>Load metadata directly from a published Google Sheet.</p>
+            </button>
+            <button id="choice-repo-csv" class="option-card" type="button">
+                <div class="option-icon option-icon--gh" aria-hidden="true">GH</div>
+                <h3>Choose from Repo</h3>
+                <p>Select an existing CSV from your repository's _data/ directory.</p>
+            </button>
+        </div>
+
+        <!-- Target Forms -->
+
+        <!-- 1. Upload CSV Section -->
+        <div id="upload-csv-section" class="hidden">
+            <button id="back-to-upload-choices-btn-1" class="secondary" style="margin-bottom: 24px;"
+                type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to Choices</button>
+            <h3>Upload CSV File</h3>
+            <label for="csv-file">Select Your CSV Metadata File:</label>
+            <p id="csv-file-hint" class="field-hint">Select a .csv file with your collection metadata.</p>
+            <input type="file" id="csv-file" accept=".csv" aria-describedby="csv-file-hint">
+        </div>
+
+        <!-- 2. Choose from Repository -->
+        <div id="repo-csv-picker" class="repo-csv-picker hidden">
+            <button id="back-to-upload-choices-btn-2" class="secondary" style="margin-bottom: 24px;"
+                type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to Choices</button>
+            <h3>Choose from Repository</h3>
+            <p class="field-hint">Select an existing CSV file from your repository's <code>_data/</code> directory.</p>
+
+            <div class="repo-csv-picker-row">
+                <select id="repo-csv-select" aria-label="Select a CSV file from the repository">
+                    <option value="">Loading files…</option>
+                </select>
+                <button id="repo-csv-use-btn" type="button" class="csv-review-btn" disabled>Use This File</button>
+            </div>
+
+            <div id="repo-csv-config-match" class="repo-csv-config-match hidden"></div>
+        </div>
+
+        <!-- 3. Connect to Google Sheets Section -->
+        <div id="google-sheets-section" class="hidden">
+            <button id="back-to-upload-choices-btn-3" class="secondary" style="margin-bottom: 24px;"
+                type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to Choices</button>
+            <h3>Connect to Google Sheets</h3>
+            <p class="field-hint">Paste the URL of your published Google Sheet containing the metadata.</p>
+            <label for="google-sheet-url">Google Sheet URL:</label>
+            <input type="text" id="google-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <button id="google-sheet-fetch-btn" type="button">Fetch Metadata</button>
+            <div id="google-sheet-error" class="error-message hidden" style="margin-top: 12px;"></div>
+
+            <!-- Shown after a successful fetch — let user choose how to use the sheet -->
+            <div id="gs-route-choice" class="hidden" style="margin-top: 20px;">
+                <p style="margin-bottom: 12px; font-weight: 500;">Sheet verified! How would you like to use it?</p>
+                <div class="options-grid" style="grid-template-columns: 1fr 1fr;">
+                    <button id="gs-choice-csv" class="option-card" type="button">
+                        <div class="option-icon" aria-hidden="true"><i data-lucide="download"></i></div>
+                        <h3>Download as CSV</h3>
+                        <p>Convert the sheet to a CSV file and commit it to your repository's <code>_data/</code>
+                            folder.</p>
+                    </button>
+                    <button id="gs-choice-link" class="option-card" type="button">
+                        <div class="option-icon" aria-hidden="true"><i data-lucide="link"></i></div>
+                        <h3>Use Sheet Link</h3>
+                        <p>Use the Google Sheet URL directly as the <code>metadata</code> value in
+                            <code>_config.yml</code>. No file upload needed.
+                        </p>
+                        <p class="option-card-warning"><i data-lucide="alert-triangle" aria-hidden="true" class="lucide-inline"></i> You won't be able to edit the CSV within the wizard.</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shown after CSV is loaded — lets user review and optionally open the editor -->
+        <div id="csv-upload-controls" class="hidden" style="margin-top: 20px;">
+            <!-- CSV file mode status card -->
+            <div id="csv-status-card" class="csv-status-card">
+                <div class="csv-status-info">
+                    <span class="csv-status-icon"><i data-lucide="file-text" aria-hidden="true"></i></span>
+                    <span id="csv-status-filename" class="csv-status-filename"></span>
+                    <span id="csv-status-badge" class="csv-modal-badge csv-modal-badge--success"></span>
+                </div>
+                <button id="csv-review-btn" type="button" class="csv-review-btn"><i data-lucide="table-2" aria-hidden="true" class="lucide-inline"></i> Open CSV Editor</button>
+            </div>
+
+            <!-- Inline preview (read-only table with validation highlights) -->
+            <div id="csv-inline-preview" class="csv-inline-preview hidden">
+                <div class="csv-inline-preview-header">
+                    <span class="csv-inline-preview-title">Data Preview</span>
+                    <div id="csv-inline-preview-badges" class="csv-inline-preview-badges"></div>
+                    <button id="csv-download-btn" type="button" class="secondary" style="font-size:0.8rem; padding:4px 10px; margin-left:auto;">
+                        <i data-lucide="download" aria-hidden="true" class="lucide-inline"></i> Download CSV
+                    </button>
+                </div>
+                <div class="csv-inline-preview-table-wrap">
+                    <table id="csv-inline-preview-table" class="demo-table"></table>
+                </div>
+                <p id="csv-inline-preview-hint" class="csv-inline-preview-hint"></p>
+            </div>
+
+            <!-- Google Sheet link mode status card (hidden by default) -->
+            <div id="gs-link-status" class="hidden">
+                <div class="csv-status-card">
+                    <div class="csv-status-info">
+                        <span class="csv-status-icon"><i data-lucide="link" aria-hidden="true"></i></span>
+                        <span class="csv-status-filename">Google Sheet linked</span>
+                        <span class="csv-modal-badge csv-modal-badge--success">No upload needed</span>
+                    </div>
+                </div>
+                <div class="info-message" style="margin-top: 8px;">The Google Sheet URL will be set as the
+                    <code>metadata</code> value in <code>_config.yml</code> when you publish.
+                </div>
+                <div class="warning-message" style="margin-top: 8px;"><i data-lucide="alert-triangle" aria-hidden="true" class="lucide-inline"></i> The CSV cannot be previewed or edited here. To
+                    make changes, edit the sheet directly in Google Sheets.</div>
+            </div>
+
+            <!-- Filename row — hidden when using Google Sheet link -->
+            <div id="csv-filename-row">
+                <label for="csv-filename" style="margin-top: 16px; display: block;">File name in repository:</label>
+                <div class="csv-name-row">
+                    <span class="csv-name-prefix">_data/</span>
+                    <input type="text" id="csv-filename" placeholder="my-collection"
+                        aria-describedby="csv-filename-hint">
+                    <span class="csv-name-suffix">.csv</span>
+                </div>
+                <p id="csv-filename-hint" class="field-hint">Only letters, numbers, hyphens, underscores, and
+                    periods.</p>
+                <div class="info-message">Your CSV will be uploaded to your repository when you click <strong>Next</strong>.</div>
+            </div>
+
+            <div id="csv-upload-status" class="hidden" style="margin-top: 10px;"></div>
+            <button id="step-3-next" style="margin-top: 12px;">Next: Media Files</button>
+        </div>
+    </div>
+</section>

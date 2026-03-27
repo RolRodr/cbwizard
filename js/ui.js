@@ -1,16 +1,17 @@
 import { STATE } from './constants.js';
-import { getSteps, elements } from './elements.js';
+import { getSteps, ELEMENTS } from './elements.js';
 import { loadDemoCSV } from './hooks/useDemoCSV.js';
-import { handleMediaDelete } from './hooks/useFiles.js';
-import { validateMediaFilenames } from './validation.js';
+import { handleMediaDelete, checkDerivativesVisibility } from './hooks/useMedia.js';
+import { loadRepoCsvPicker } from './hooks/useCsvUpload.js';
+import { validateMediaFilenames, validateCSV } from './validation.js';
 import { renderCSVTable, parseCSV } from './utils/csv.js';
 import { getRepoContents, getGitHubPages } from './api.js';
 
 
 /** Renders a repository's top-level file structure into the file tree container. */
 export async function renderRepoFileTree(owner, repoName) {
-    const treeContainer = elements.repoFileTreeContainer;
-    const treeCode = elements.repoFileTree;
+    const treeContainer = ELEMENTS.repoFileTreeContainer;
+    const treeCode = ELEMENTS.repoFileTree;
 
     if (!treeContainer || !treeCode) return;
 
@@ -41,8 +42,8 @@ export async function renderRepoFileTree(owner, repoName) {
 
 /** Renders repository configuration from _config.yml to the UI. */
 export async function renderRepoConfig(owner, repoName) {
-    const configContainer = elements.repoConfigContainer;
-    const configContent = elements.repoConfigContent;
+    const configContainer = ELEMENTS.repoConfigContainer;
+    const configContent = ELEMENTS.repoConfigContent;
 
     if (!configContainer || !configContent) return;
 
@@ -92,7 +93,7 @@ export async function renderRepoConfig(owner, repoName) {
             li.style.borderTop = '1px solid #eaecef';
 
             if (pagesData && pagesData.html_url) {
-                li.innerHTML = `<strong>GitHub Pages:</strong> <a href="${pagesData.html_url}" target="_blank" rel="noopener noreferrer">${pagesData.html_url} <span aria-hidden="true">↗</span></a>`;
+                li.innerHTML = `<strong>GitHub Pages:</strong> <a href="${pagesData.html_url}" target="_blank" rel="noopener noreferrer">${pagesData.html_url} <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i></a>`;
             } else {
                 li.innerHTML = `<strong>GitHub Pages:</strong> <span style="color: #d9534f; font-weight: 500;">Not configured</span>`;
             }
@@ -110,9 +111,9 @@ export async function renderRepoConfig(owner, repoName) {
 
 /** Renders thumbnail previews for all media files, flagging those not found in the CSV. */
 export function renderImagePreview(mediaFiles, onDelete) {
-    elements.imagePreview.innerHTML = '';
+    ELEMENTS.imagePreview.innerHTML = '';
     if (!mediaFiles || mediaFiles.length === 0) {
-        elements.imagePreview.classList.add('hidden');
+        ELEMENTS.imagePreview.classList.add('hidden');
         return;
     }
 
@@ -125,7 +126,10 @@ export function renderImagePreview(mediaFiles, onDelete) {
         invalidFiles = validateMediaFilenames(mediaFiles, rows);
     }
 
-    mediaFiles.forEach(file => {
+    // Filter out generated derivatives so they don't clutter the preview
+    const originalMediaFiles = mediaFiles.filter(f => !f.id.startsWith('media_thumb_') && !f.id.startsWith('media_small_'));
+
+    originalMediaFiles.forEach(file => {
         const container = document.createElement('div');
         container.classList.add('image-preview-item');
 
@@ -186,7 +190,7 @@ export function renderImagePreview(mediaFiles, onDelete) {
 
         // Delete Button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '×';
+        deleteBtn.innerHTML = '<i data-lucide="x" aria-hidden="true"></i>';
         deleteBtn.title = 'Remove file';
         deleteBtn.classList.add('delete-btn');
         deleteBtn.setAttribute('aria-label', `Remove ${file.name}`);
@@ -200,9 +204,10 @@ export function renderImagePreview(mediaFiles, onDelete) {
         container.appendChild(thumbWrapper);
         container.appendChild(infoDiv);
 
-        elements.imagePreview.appendChild(container);
+        ELEMENTS.imagePreview.appendChild(container);
     });
-    elements.imagePreview.classList.remove('hidden');
+    ELEMENTS.imagePreview.classList.remove('hidden');
+    window.lucide?.createIcons();
 }
 
 /** Displays a banner listing critical CSV validation errors, if any. */
@@ -210,10 +215,10 @@ export function renderValidationBanner(validationReport, header) {
     const existingBanner = document.getElementById('csv-validation-banner');
     if (existingBanner) existingBanner.remove();
 
-    const navStep3 = document.getElementById('nav-step-3');
+    const navCsv = document.getElementById('nav-csv');
 
     if (!validationReport || validationReport.size === 0) {
-        if (navStep3) navStep3.classList.remove('nav-has-errors');
+        if (navCsv) navCsv.classList.remove('nav-has-errors');
         return;
     }
 
@@ -228,7 +233,7 @@ export function renderValidationBanner(validationReport, header) {
     }
 
     // Flag the CSV nav step with a critical-issue indicator
-    if (navStep3) navStep3.classList.add('nav-has-errors');
+    if (navCsv) navCsv.classList.add('nav-has-errors');
 
     const banner = document.createElement('div');
     banner.id = 'csv-validation-banner';
@@ -252,27 +257,103 @@ export function renderValidationBanner(validationReport, header) {
     });
     banner.appendChild(list);
 
-    if (elements.csvPreview && elements.csvPreview.parentNode) {
-        elements.csvPreview.after(banner);
+    const csvUploadControls = ELEMENTS.csvUploadControls;
+    if (csvUploadControls && csvUploadControls.parentNode) {
+        csvUploadControls.after(banner);
     }
 
     // Announce to screen readers
     announce(`Found ${errors.length} critical issue${errors.length > 1 ? 's' : ''} in your CSV file. Review the highlighted cells.`);
 }
 
+/** Whether a step transition is currently animating. */
+let _transitioning = false;
+
+/** Set to true to skip animation (e.g. initial load). */
+let _skipTransition = true;
+
 /** Updates the entire UI to reflect the current wizard step and app state. */
 export function updateUI() {
     const steps = getSteps();
-    steps.forEach((step, index) => {
-        if (index === STATE.currentStep) {
-            step.classList.remove('hidden');
-            step.classList.add('active');
-        } else {
-            step.classList.add('hidden');
-            step.classList.remove('active');
-        }
-    });
 
+    if (_skipTransition || _transitioning) {
+        // Instant swap (initial load or already animating)
+        _skipTransition = false;
+        steps.forEach((step, index) => {
+            if (index === STATE.currentStep) {
+                step.classList.remove('hidden', 'step-exiting', 'step-entering');
+                step.classList.add('active', 'step-entering');
+            } else {
+                step.classList.add('hidden');
+                step.classList.remove('active', 'step-entering', 'step-exiting');
+            }
+        });
+        _finishTransition(steps);
+        return;
+    }
+
+    // Find the currently visible step
+    const currentlyVisible = Array.from(steps).find(
+        s => s.classList.contains('active') && !s.classList.contains('hidden')
+    );
+
+    if (!currentlyVisible || currentlyVisible === steps[STATE.currentStep]) {
+        // No animation needed — just show the target
+        steps.forEach((step, index) => {
+            if (index === STATE.currentStep) {
+                step.classList.remove('hidden');
+                step.classList.add('active', 'step-entering');
+            } else {
+                step.classList.add('hidden');
+                step.classList.remove('active', 'step-entering', 'step-exiting');
+            }
+        });
+        _finishTransition(steps);
+        return;
+    }
+
+    _transitioning = true;
+
+    // Animate out the current step
+    currentlyVisible.classList.add('step-exiting');
+
+    const onExitEnd = () => {
+        currentlyVisible.removeEventListener('animationend', onExitEnd);
+        currentlyVisible.classList.add('hidden');
+        currentlyVisible.classList.remove('active', 'step-exiting');
+
+        // Animate in the new step
+        const nextStep = steps[STATE.currentStep];
+        if (nextStep) {
+            nextStep.classList.remove('hidden');
+            nextStep.classList.add('active', 'step-entering');
+
+            const onEnterEnd = () => {
+                nextStep.removeEventListener('animationend', onEnterEnd);
+                nextStep.classList.remove('step-entering');
+                _transitioning = false;
+            };
+            nextStep.addEventListener('animationend', onEnterEnd, { once: true });
+        } else {
+            _transitioning = false;
+        }
+
+        _finishTransition(steps);
+    };
+
+    currentlyVisible.addEventListener('animationend', onExitEnd, { once: true });
+
+    // Safety fallback in case animationend doesn't fire
+    setTimeout(() => {
+        if (_transitioning) {
+            currentlyVisible.removeEventListener('animationend', onExitEnd);
+            onExitEnd();
+        }
+    }, 300);
+}
+
+/** Shared post-transition work: focus, user info, restore state, sidebar. */
+function _finishTransition(steps) {
     // Move focus to the active step heading for keyboard/screen-reader users
     const activeStep = steps[STATE.currentStep];
     if (activeStep) {
@@ -284,32 +365,34 @@ export function updateUI() {
     }
 
     if (STATE.user) {
-        elements.userInfo.classList.remove('hidden');
-        if (elements.username) elements.username.textContent = STATE.user.login;
-        if (elements.topAvatar) elements.topAvatar.src = STATE.user.avatar_url;
+        ELEMENTS.userInfo.classList.remove('hidden');
+        if (ELEMENTS.username) ELEMENTS.username.textContent = STATE.user.login;
+        if (ELEMENTS.topAvatar) ELEMENTS.topAvatar.src = STATE.user.avatar_url;
     } else {
-        elements.userInfo.classList.add('hidden');
+        ELEMENTS.userInfo.classList.add('hidden');
     }
 
     // Restore input values if available
-    if (STATE.templateRepo) elements.templateRepoInput.value = STATE.templateRepo;
+    if (STATE.templateRepo) ELEMENTS.templateRepoInput.value = STATE.templateRepo;
 
     restoreStepState();
     updateSidebarNav();
+    updateRepoSidebar();
+    window.lucide?.createIcons();
 }
 
 /** Restores within-step UI state so navigating back shows the correct post-action view. */
 function restoreStepState() {
     // Step 1: if user is authenticated and navigating back, show the profile card
     if (STATE.currentStep === 1 && STATE.user) {
-        elements.authForm.classList.add('hidden');
-        elements.userAvatar.src = STATE.user.avatar_url;
-        elements.userAvatar.alt = `${STATE.user.login}'s avatar`;
-        elements.confirmDisplayname.textContent = STATE.user.name || STATE.user.login;
-        elements.confirmUsername.textContent = `@${STATE.user.login}`;
-        elements.confirmBio.textContent = STATE.user.bio || '';
-        elements.confirmRepos.textContent = STATE.user.public_repos + (STATE.user.total_private_repos || 0);
-        elements.userConfirmation.classList.remove('hidden');
+        ELEMENTS.authForm.classList.add('hidden');
+        ELEMENTS.userAvatar.src = STATE.user.avatar_url;
+        ELEMENTS.userAvatar.alt = `${STATE.user.login}'s avatar`;
+        ELEMENTS.confirmDisplayname.textContent = STATE.user.name || STATE.user.login;
+        ELEMENTS.confirmUsername.textContent = `@${STATE.user.login}`;
+        ELEMENTS.confirmBio.textContent = STATE.user.bio || '';
+        ELEMENTS.confirmRepos.textContent = STATE.user.public_repos + (STATE.user.total_private_repos || 0);
+        ELEMENTS.userConfirmation.classList.remove('hidden');
     }
 
     // Step 2: if repository selected/forked, show success, hide selection options
@@ -317,64 +400,145 @@ function restoreStepState() {
         const [owner, repoName] = STATE.targetRepo.split('/');
 
         // Hide initial options
-        if (elements.forkForm) elements.forkForm.classList.add('hidden');
-        if (elements.forkOptionsContainer) elements.forkOptionsContainer.classList.add('hidden');
-        if (elements.existingReposContainer) elements.existingReposContainer.classList.add('hidden');
-        if (elements.repoChoicesContainer) elements.repoChoicesContainer.classList.add('hidden');
+        if (ELEMENTS.forkForm) ELEMENTS.forkForm.classList.add('hidden');
+        if (ELEMENTS.forkOptionsContainer) ELEMENTS.forkOptionsContainer.classList.add('hidden');
+        if (ELEMENTS.existingReposContainer) ELEMENTS.existingReposContainer.classList.add('hidden');
+        if (ELEMENTS.repoChoicesContainer) ELEMENTS.repoChoicesContainer.classList.add('hidden');
 
         // Show success state
-        if (elements.step2Success) {
-            elements.step2Success.classList.remove('hidden');
+        if (ELEMENTS.repositorySuccess) {
+            ELEMENTS.repositorySuccess.classList.remove('hidden');
 
             // Restore Repo Name
-            if (elements.selectedRepoName) {
-                elements.selectedRepoName.textContent = repoName;
+            if (ELEMENTS.selectedRepoName) {
+                ELEMENTS.selectedRepoName.textContent = repoName;
             }
 
             // Restore Link
-            if (elements.newRepoLink) {
-                elements.newRepoLink.href = `https://github.com/${STATE.targetRepo}`;
+            if (ELEMENTS.newRepoLink) {
+                ELEMENTS.newRepoLink.href = `https://github.com/${STATE.targetRepo}`;
             }
 
             // Restore Config or File Tree
             if (STATE.isExistingRepo) {
-                if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.add('hidden');
+                if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.add('hidden');
 
-                if (elements.repoConfigContainer) elements.repoConfigContainer.classList.remove('hidden');
-                if (elements.repoConfigContent && !elements.repoConfigContent.innerHTML.trim()) {
+                if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.remove('hidden');
+                if (ELEMENTS.repoConfigContent && !ELEMENTS.repoConfigContent.innerHTML.trim()) {
                     renderRepoConfig(owner, repoName);
                 }
             } else {
-                if (elements.repoConfigContainer) elements.repoConfigContainer.classList.add('hidden');
+                if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.add('hidden');
 
-                if (elements.repoFileTreeContainer) elements.repoFileTreeContainer.classList.remove('hidden');
-                if (elements.repoFileTree && !elements.repoFileTree.textContent.trim()) {
+                if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.remove('hidden');
+                if (ELEMENTS.repoFileTree && !ELEMENTS.repoFileTree.textContent.trim()) {
                     renderRepoFileTree(owner, repoName);
                 }
             }
         }
     }
 
-    // Step 3: restore CSV preview table on back-navigation
+    // Step 3: restore CSV status card on back-navigation
     if (STATE.currentStep === 3) {
         if (STATE.csvFile && STATE.csvFile.content) {
-            // Re-render table preview if not yet shown
-            const tableWrap = elements.csvPreview;
-            const table = elements.csvTable;
-            if (tableWrap && table && table.rows.length === 0) {
-                const { validationReport, header } = renderCSVTable(STATE.csvFile.content, table);
-                tableWrap.classList.remove('hidden');
-                renderValidationBanner(validationReport, header);
+            // CSV file mode — restore status card
+            const filenameEl = document.getElementById('csv-status-filename');
+            const badgeEl = document.getElementById('csv-status-badge');
+            if (filenameEl) filenameEl.textContent = STATE.csvFile.name || 'data.csv';
+            if (badgeEl) {
+                const rows = parseCSV(STATE.csvFile.content);
+                const report = validateCSV(rows);
+                let errorCount = 0, warningCount = 0;
+                for (const issue of report.values()) {
+                    if (issue.type === 'error') errorCount++;
+                    else if (issue.type === 'warning') warningCount++;
+                }
+                badgeEl.className = 'csv-modal-badge';
+                if (errorCount > 0) {
+                    badgeEl.classList.add('csv-modal-badge--error');
+                    badgeEl.textContent = `${errorCount} error${errorCount > 1 ? 's' : ''}`;
+                } else if (warningCount > 0) {
+                    badgeEl.classList.add('csv-modal-badge--warning');
+                    badgeEl.textContent = `${warningCount} warning${warningCount > 1 ? 's' : ''}`;
+                } else {
+                    badgeEl.classList.add('csv-modal-badge--success');
+                    badgeEl.innerHTML = '<i data-lucide="check" aria-hidden="true" class="lucide-inline"></i> All clear';
+                }
+                window.lucide?.createIcons();
             }
+
+            // Ensure CSV mode UI is correct
+            const statusCard = document.getElementById('csv-status-card');
+            const gsLinkStatus = document.getElementById('gs-link-status');
+            const filenameRow = document.getElementById('csv-filename-row');
+            if (statusCard) statusCard.classList.remove('hidden');
+            if (gsLinkStatus) gsLinkStatus.classList.add('hidden');
+            if (filenameRow) filenameRow.classList.remove('hidden');
 
             // Restore filename input and show controls
             const safeName = (STATE.csvFile.name || 'data.csv').replace(/\.csv$/i, '');
-            elements.csvFilenameInput.value = safeName;
-            elements.csvUploadControls.classList.remove('hidden');
+            ELEMENTS.csvFilenameInput.value = safeName;
+            ELEMENTS.csvUploadControls.classList.remove('hidden');
+
+            // Restore inline preview
+            const inlinePreviewEl = document.getElementById('csv-inline-preview');
+            const inlineTableEl = document.getElementById('csv-inline-preview-table');
+            const inlineBadgesEl = document.getElementById('csv-inline-preview-hints');
+            if (inlinePreviewEl && inlineTableEl) {
+                const previewResult = renderCSVTable(STATE.csvFile.content, inlineTableEl, true);
+                const badgesEl2 = document.getElementById('csv-inline-preview-badges');
+                const hintEl2 = document.getElementById('csv-inline-preview-hint');
+                if (badgesEl2 && previewResult) {
+                    badgesEl2.innerHTML = '';
+                    let ec = 0, wc = 0;
+                    for (const iss of previewResult.validationReport.values()) {
+                        if (iss.type === 'error') ec++;
+                        else if (iss.type === 'warning') wc++;
+                    }
+                    if (ec > 0) {
+                        const b = document.createElement('span');
+                        b.className = 'csv-modal-badge csv-modal-badge--error';
+                        b.textContent = `${ec} error${ec > 1 ? 's' : ''}`;
+                        badgesEl2.appendChild(b);
+                    }
+                    if (wc > 0) {
+                        const b = document.createElement('span');
+                        b.className = 'csv-modal-badge csv-modal-badge--warning';
+                        b.textContent = `${wc} warning${wc > 1 ? 's' : ''}`;
+                        badgesEl2.appendChild(b);
+                    }
+                    if (ec === 0 && wc === 0) {
+                        const b = document.createElement('span');
+                        b.className = 'csv-modal-badge csv-modal-badge--success';
+                        b.innerHTML = '<i data-lucide="check" aria-hidden="true" class="lucide-inline"></i> All clear';
+                        badgesEl2.appendChild(b);
+                    }
+                    window.lucide?.createIcons();
+                }
+                if (hintEl2) {
+                    const rows2 = parseCSV(STATE.csvFile.content);
+                    const dataRows = Math.max(0, rows2.length - 1);
+                    const cols = rows2[0]?.length || 0;
+                    hintEl2.textContent = `${dataRows} row${dataRows !== 1 ? 's' : ''}, ${cols} column${cols !== 1 ? 's' : ''}.`;
+                }
+                inlinePreviewEl.classList.remove('hidden');
+            }
+
+        } else if (STATE.googleSheetUrl) {
+            // Link mode — restore link status card, hide CSV-mode elements
+            const statusCard = document.getElementById('csv-status-card');
+            const gsLinkStatus = document.getElementById('gs-link-status');
+            const filenameRow = document.getElementById('csv-filename-row');
+            if (statusCard) statusCard.classList.add('hidden');
+            if (gsLinkStatus) gsLinkStatus.classList.remove('hidden');
+            if (filenameRow) filenameRow.classList.add('hidden');
+            if (ELEMENTS.step3Next) ELEMENTS.step3Next.disabled = false;
+            ELEMENTS.csvUploadControls.classList.remove('hidden');
         }
 
         if (STATE.targetRepo) {
             loadDemoCSV();
+            loadRepoCsvPicker();
         }
     }
 
@@ -383,6 +547,7 @@ function restoreStepState() {
         if (STATE.mediaFiles && STATE.mediaFiles.length > 0) {
             renderImagePreview(STATE.mediaFiles, handleMediaDelete);
         }
+        checkDerivativesVisibility();
     }
 }
 
@@ -392,14 +557,26 @@ function updateSidebarNav() {
 
     // Show the sidebar once user is on step 1+ and authenticated
     if (!user || currentStep < 1) {
-        elements.stepNav.classList.add('hidden');
-        if (elements.appLayout) elements.appLayout.classList.add('centered-view');
+        ELEMENTS.stepNav.classList.add('hidden');
+        if (ELEMENTS.appLayout) {
+            ELEMENTS.appLayout.classList.add('centered-view');
+            ELEMENTS.appLayout.classList.remove('has-sidebar');
+        }
         return;
     }
-    elements.stepNav.classList.remove('hidden');
-    if (elements.appLayout) elements.appLayout.classList.remove('centered-view');
+    ELEMENTS.stepNav.classList.remove('hidden');
+    if (ELEMENTS.appLayout) ELEMENTS.appLayout.classList.remove('centered-view');
 
-    elements.navItems.forEach(item => {
+    // Toggle right sidebar grid column
+    if (ELEMENTS.appLayout) {
+        if (STATE.targetRepo) {
+            ELEMENTS.appLayout.classList.add('has-sidebar');
+        } else {
+            ELEMENTS.appLayout.classList.remove('has-sidebar');
+        }
+    }
+
+    ELEMENTS.navItems.forEach(item => {
         const itemStep = parseInt(item.dataset.step, 10);
         item.classList.remove('nav-active', 'nav-done');
         item.removeAttribute('aria-current');
@@ -418,9 +595,119 @@ function updateSidebarNav() {
     });
 }
 
+
+/** Populates the right repo sidebar with current state data. */
+let _sidebarConfigFetched = null; // tracks which repo config has been fetched
+
+function updateRepoSidebar() {
+    const sidebar = ELEMENTS.repoSidebar;
+    if (!sidebar) return;
+
+    if (!STATE.targetRepo) {
+        sidebar.classList.add('hidden');
+        return;
+    }
+
+    sidebar.classList.remove('hidden');
+
+    const [owner, repoName] = STATE.targetRepo.split('/');
+
+    // Repo identity
+    if (ELEMENTS.sidebarRepoName) {
+        ELEMENTS.sidebarRepoName.textContent = repoName;
+    }
+    if (ELEMENTS.sidebarRepoLink) {
+        ELEMENTS.sidebarRepoLink.href = `https://github.com/${STATE.targetRepo}`;
+        ELEMENTS.sidebarRepoLink.classList.remove('hidden');
+    }
+    if (ELEMENTS.sidebarForkSource) {
+        if (!STATE.isExistingRepo && STATE.templateRepo) {
+            ELEMENTS.sidebarForkSource.textContent = `Forked from ${STATE.templateRepo.split('/')[1]}`;
+            ELEMENTS.sidebarForkSource.classList.remove('hidden');
+        } else {
+            ELEMENTS.sidebarForkSource.classList.add('hidden');
+        }
+    }
+
+    // Files summary
+    if (ELEMENTS.sidebarCsvStatus) {
+        if (STATE.csvFile && STATE.csvFile.name) {
+            ELEMENTS.sidebarCsvStatus.textContent = STATE.csvFile.name;
+            ELEMENTS.sidebarCsvStatus.style.color = 'var(--success-color)';
+            if (ELEMENTS.sidebarCsvPreviewBtn) ELEMENTS.sidebarCsvPreviewBtn.classList.remove('hidden');
+        } else if (STATE.googleSheetUrl) {
+            ELEMENTS.sidebarCsvStatus.textContent = 'Linked to Google Sheet';
+            ELEMENTS.sidebarCsvStatus.style.color = 'var(--success-color)';
+            if (ELEMENTS.sidebarCsvPreviewBtn) ELEMENTS.sidebarCsvPreviewBtn.classList.remove('hidden');
+        } else {
+            ELEMENTS.sidebarCsvStatus.textContent = 'Not uploaded';
+            ELEMENTS.sidebarCsvStatus.style.color = '';
+            if (ELEMENTS.sidebarCsvPreviewBtn) ELEMENTS.sidebarCsvPreviewBtn.classList.add('hidden');
+        }
+    }
+    if (ELEMENTS.sidebarMediaCount) {
+        const count = STATE.mediaFiles ? STATE.mediaFiles.length : 0;
+        ELEMENTS.sidebarMediaCount.textContent = `${count} file${count !== 1 ? 's' : ''}`;
+    }
+
+    // Fetch config + pages status (only once per repo)
+    if (_sidebarConfigFetched !== STATE.targetRepo) {
+        _sidebarConfigFetched = STATE.targetRepo;
+        _fetchSidebarConfig(owner, repoName);
+    }
+}
+
+/** Fetches _config.yml and GitHub Pages status for the sidebar. */
+async function _fetchSidebarConfig(owner, repoName) {
+    // Config
+    try {
+        const fileData = await getRepoContents(owner, repoName, '_config.yml');
+        if (fileData && fileData.content) {
+            const contentStr = decodeURIComponent(escape(atob(fileData.content)));
+            const extract = (key) => {
+                const regex = new RegExp(`^${key}:\\s*(.*)`, 'm');
+                const match = contentStr.match(regex);
+                let val = match ? match[1].trim() : '';
+                if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+                if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
+                return val || '—';
+            };
+
+            if (ELEMENTS.sidebarConfigTitle) ELEMENTS.sidebarConfigTitle.textContent = extract('title');
+            if (ELEMENTS.sidebarConfigTagline) ELEMENTS.sidebarConfigTagline.textContent = extract('tagline');
+            if (ELEMENTS.sidebarConfigMetadata) ELEMENTS.sidebarConfigMetadata.textContent = extract('metadata');
+        }
+    } catch (e) {
+        console.warn('Failed to fetch config for sidebar:', e);
+    }
+
+    // Pages status
+    try {
+        const pagesData = await getGitHubPages(owner, repoName);
+        if (ELEMENTS.sidebarPagesStatus) {
+            if (pagesData && pagesData.html_url) {
+                ELEMENTS.sidebarPagesStatus.innerHTML = `
+                    <span class="sidebar-status-dot sidebar-status-dot--active"></span>
+                    <a href="${pagesData.html_url}" target="_blank" rel="noopener noreferrer">
+                        Live <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i>
+                    </a>
+                `;
+            } else {
+                ELEMENTS.sidebarPagesStatus.innerHTML = `
+                    <span class="sidebar-status-dot sidebar-status-dot--inactive"></span>
+                    Not configured
+                `;
+            }
+            window.lucide?.createIcons();
+        }
+    } catch (e) {
+        console.warn('Failed to fetch Pages status for sidebar:', e);
+    }
+}
+
 /** Registers click and keyboard listeners on sidebar navigation items. */
 export function initSidebarNav() {
-    elements.navItems.forEach(item => {
+    ELEMENTS.navItems.forEach(item => {
         // Click handler
         item.addEventListener('click', () => {
             if (item.classList.contains('nav-done')) {
@@ -442,15 +729,15 @@ export function initSidebarNav() {
 
 /** Displays a global error message to the user. */
 export function showError(msg) {
-    elements.globalError.textContent = msg;
-    elements.globalError.classList.remove('hidden');
+    ELEMENTS.globalError.textContent = msg;
+    ELEMENTS.globalError.classList.remove('hidden');
     announce(msg);
 }
 
 /** Hides the global error message. */
 export function clearError() {
-    elements.globalError.textContent = '';
-    elements.globalError.classList.add('hidden');
+    ELEMENTS.globalError.textContent = '';
+    ELEMENTS.globalError.classList.add('hidden');
 }
 
 /** Announces a message to screen readers via the ARIA live region. */

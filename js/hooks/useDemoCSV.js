@@ -1,19 +1,15 @@
-import { STATE } from '../constants.js';
-import { githubRequest } from '../api.js';
-import { elements } from '../elements.js';
-import { parseCSV, renderCSVTable } from '../utils/csv.js';
+import { ELEMENTS } from '../elements.js';
+import { renderCSVTable } from '../utils/csv.js';
 
-/** Fetches and renders the demo-metadata.csv from the user's forked repository. */
+/** Fetches and renders the local demo-metadata.csv from assets/. */
 export async function loadDemoCSV() {
-    const tableWrap = elements.demoCsvTableWrap;
-    const loading = elements.demoCsvLoading;
-    const errorEl = elements.demoCsvError;
-    const table = elements.demoCsvTable;
+    const tableWrap = ELEMENTS.demoCsvTableWrap;
+    const loading = ELEMENTS.demoCsvLoading;
+    const errorEl = ELEMENTS.demoCsvError;
+    const table = ELEMENTS.demoCsvTable;
 
     // Already loaded — nothing to do
     if (tableWrap && !tableWrap.classList.contains('hidden')) return;
-
-    if (!STATE.targetRepo) return;
 
     // Reset state
     if (loading) loading.classList.remove('hidden');
@@ -21,12 +17,10 @@ export async function loadDemoCSV() {
     if (tableWrap) tableWrap.classList.add('hidden');
 
     try {
-        const data = await githubRequest(`/repos/${STATE.targetRepo}/contents/_data/demo-metadata.csv`);
-
-        // GitHub returns base64-encoded content
-        const raw = atob(data.content.replace(/\n/g, ''));
-        renderCSVTable(raw, table, false); // False = No validation for demo data
-
+        const resp = await fetch('assets/demo-metadata.csv');
+        if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
+        const raw = await resp.text();
+        renderCSVTable(raw, table, false); // false = no validation for demo data
 
         if (loading) loading.classList.add('hidden');
         if (tableWrap) tableWrap.classList.remove('hidden');

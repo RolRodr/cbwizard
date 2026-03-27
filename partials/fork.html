@@ -1,32 +1,38 @@
-<!-- Step 2: Fork -->
-<section id="step-2" class="wizard-step hidden">
-    <h2>Step 2: Choose Repository</h2>
+<section id="fork-section" class="wizard-step hidden">
+    <h2>Choose Repository</h2>
+    <p class="step-subtitle">Clone a template or select an existing repository.</p>
 
     <!-- Choice Menu -->
-    <div id="repo-choices-container" class="options-grid">
-        <button id="choice-fork-csv" class="option-card" type="button">
-            <div class="option-icon">📄</div>
-            <h3>Fork CSV CollectionBuilder</h3>
-            <p>Start a new collection using the standard CSV template.</p>
-        </button>
-        <button id="choice-fork-gh" class="option-card" type="button">
-            <div class="option-icon">🌐</div>
-            <h3>Fork GH CollectionBuilder</h3>
-            <p>Start a new collection using the GitHub Pages template.</p>
-        </button>
-        <button id="choice-modify-existing" class="option-card" type="button">
-            <div class="option-icon">✏️</div>
-            <h3>Modify Existing</h3>
-            <p>Select an existing CollectionBuilder repository to edit.</p>
-        </button>
+    <div id="repo-choices-container">
+        <div class="options-grid">
+            <button id="choice-fork-csv" class="option-card" type="button">
+                <div class="option-icon option-icon--csv" aria-hidden="true">CSV</div>
+                <h3>Clone CollectionBuilder CSV Template</h3>
+                <p>Most robust template for creating a collection.</p>
+            </button>
+            <button id="choice-fork-gh" class="option-card" type="button">
+                <div class="option-icon option-icon--gh" aria-hidden="true">GP</div>
+                <h3>Clone CollectionBuilder GitHub Pages Template</h3>
+                <p>Most basic template for creating a collection.</p>
+            </button>
+            <button id="choice-modify-existing" class="option-card" type="button">
+                <div class="option-icon option-icon--edit" aria-hidden="true"><i data-lucide="pencil"></i></div>
+                <h3>Modify Existing</h3>
+                <p>Select an existing CollectionBuilder repository to edit.</p>
+            </button>
+        </div>
+        <p>To learn more about the different templates, <a
+                href="https://collectionbuilder.github.io/cb-docs/docs/walkthroughs/csv-walkthrough/"
+                target="_blank">see the CollectionBuilder docs</a>.</p>
+
     </div>
 
     <!-- Forking Form (Hidden by default) -->
     <div id="fork-options-container" class="hidden">
-        <button id="back-to-choices-btn" class="secondary" style="margin-bottom: 16px;" type="button">&larr; Back to
+        <button id="back-to-choices-btn" class="secondary" style="margin-bottom: 16px;" type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to
             Choices</button>
 
-        <p>We will fork the chosen template to your account.</p>
+        <p>We will clone the chosen template to your account.</p>
 
         <form id="fork-form">
             <label for="template-repo">Template Repository (Source):</label>
@@ -50,7 +56,7 @@
 
     <!-- Existing Repos View -->
     <div id="existing-repos-container" class="hidden">
-        <button id="back-to-fork-btn" class="secondary" style="margin-bottom: 16px;">&larr; Back to
+        <button id="back-to-fork-btn" class="secondary" style="margin-bottom: 16px;"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to
             Fork</button>
         <h3>Select Your Collection Repository</h3>
         <p>Select a repository that was forked from <strong>CollectionBuilder-CSV</strong>.</p>
@@ -67,16 +73,13 @@
     <div id="step-2-success" class="hidden" style="margin-top: 20px;" role="status">
         <div class="success-message">
             Repository selected <span id="selected-repo-name" style="font-weight:bold;"></span>! <br>
-            <a id="new-repo-link" href="#" target="_blank" rel="noopener noreferrer">View on GitHub <span
-                    aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+            <a id="new-repo-link" href="#" target="_blank" rel="noopener noreferrer">View on GitHub <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i><span class="sr-only"> (opens in a new tab)</span></a>
         </div>
-        <!-- File Tree Visualization (New Forks) -->
+        <!-- File tree and config are now displayed in the repo sidebar -->
         <div id="repo-file-tree-container" class="file-tree-container hidden">
             <h4>Repository Contents:</h4>
             <pre id="repo-file-tree" class="file-tree-code"></pre>
         </div>
-
-        <!-- Configuration Visualization (Existing Forks) -->
         <div id="repo-config-container" class="file-tree-container hidden">
             <h4>Repository Configuration:</h4>
             <div id="repo-config-content" class="config-content"></div>
