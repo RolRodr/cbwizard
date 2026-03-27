@@ -1,0 +1,390 @@
+/* ── Lucide Icons ── */
+
+.lucide-inline {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    stroke-width: 2;
+}
+
+.hero-feature-icon svg,
+.csv-status-icon svg,
+.option-icon svg {
+    width: 1.25em;
+    height: 1.25em;
+    stroke-width: 1.75;
+}
+
+/* ──  Base & Body ── */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Visually hidden but available to screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Standalone main fallback */
+main {
+    max-width: 800px;
+    margin: 40px auto;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+pre {
+    margin: 0;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12px;
+}
+
+/* Consistent link styling everywhere */
+a {
+    color: var(--info-color);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+
+
+/* ── Tooltips & Info Alerts ── */
+
+.info-details {
+    display: inline-block;
+    position: relative;
+    vertical-align: baseline;
+    transform: translateY(-1px) translateX(-4px);
+    margin-left: 0;
+}
+
+.info-details summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: var(--info-color);
+    color: var(--bg-color);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+    user-select: none;
+}
+
+.info-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.info-details summary:hover {
+    background: var(--text-color);
+}
+
+.info-details .info-popup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    background: var(--text-color);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+}
+
+.info-details .info-popup::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text-color);
+}
+
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-color);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    max-width: 260px;
+    width: max-content;
+    z-index: 9999;
+    box-shadow: var(--shadow-lg);
+    pointer-events: none;
+    animation: tooltipIn 0.15s var(--ease-out);
+}
+
+[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text-color);
+    z-index: 9999;
+    pointer-events: none;
+}
+
+@keyframes tooltipIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+
+
+
+/* ── Utility Classes ── */
+
+.field-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: -8px 0 var(--sp-md) 0;
+}
+
+.status-message {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: var(--sp-sm);
+}
+
+#demo-csv-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+
+/* ── 27. Responsive ── */
+
+/* Hide right sidebar on medium screens */
+@media (max-width: 768px) {
+
+    #app-layout,
+    #app-layout.has-sidebar {
+        grid-template-columns: 200px 1fr;
+        grid-template-areas: "nav main";
+    }
+
+    .repo-sidebar {
+        display: none !important;
+    }
+}
+
+/* Hide left nav on small screens */
+@media (max-width: 640px) {
+
+    #app-layout,
+    #app-layout.has-sidebar {
+        grid-template-columns: 1fr;
+        grid-template-areas: "main";
+        padding: var(--sp-md);
+    }
+
+    #step-nav {
+        display: none !important;
+    }
+
+    .repo-sidebar {
+        display: none !important;
+    }
+
+    .wizard-step {
+        padding: var(--sp-lg) var(--sp-md);
+    }
+
+    #step-0 {
+        padding: var(--sp-2xl) var(--sp-lg);
+    }
+
+    #step-0 h2 {
+        font-size: 24px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: var(--sp-sm);
+        text-align: center;
+    }
+
+    .csv-name-row {
+        max-width: 100%;
+    }
+
+    header {
+        padding: var(--sp-md);
+        position: static;
+    }
+}
+
+@media (max-width: 480px) {
+    button {
+        width: 100%;
+    }
+
+    .actions,
+    #step-4-buttons {
+        flex-direction: column;
+    }
+}
+
+
+
+/* ── Skip Link ── */
+
+.skip-link {
+    position: absolute;
+    top: -48px;
+    left: 0;
+    background: var(--text-color);
+    color: #fff;
+    padding: 10px var(--sp-md);
+    border-radius: 0 0 var(--radius-sm) 0;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1000;
+    text-decoration: none;
+    transition: top 0.15s var(--ease-out);
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+    color: #fff;
+}
+
+
+
+/* ── Scrollbar Styling ── */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c8cf;
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0a8b0;
+}
+
+
+
+/* ── Selection Color ── */
+
+::selection {
+    background: var(--primary-light);
+    color: var(--text-color);
+}
+
+
+
+/* ── Responsive: CSV Modal ── */
+@media (max-width: 640px) {
+    .csv-modal-panel {
+        max-width: 100vw;
+        width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .csv-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--sp-sm);
+    }
+
+    .csv-modal-footer-actions {
+        justify-content: stretch;
+    }
+
+    .csv-modal-btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+
+
+/* ── Misc ── */
+
+code {
+    background: var(--primary-light);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.privacy-banner {
+    align-items: center;
+    text-align: center;
+}

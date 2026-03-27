@@ -1,0 +1,58 @@
+/* ── Refined Design Tokens ── */
+
+:root {
+    /* Primary palette — richer green with tonal range */
+    --primary-color: #1b7f37;
+    --primary-hover: #15692d;
+    --primary-light: #d4f5dd;
+    --primary-subtle: #eafff0;
+
+    /* Neutral palette — warmer grays for less "raw" feel */
+    --text-color: #1f2328;
+    --text-secondary: #59636e;
+    --bg-color: #f0f3f6;
+    --card-bg: #ffffff;
+    --border-color: #d1d9e0;
+    --border-light: #e8ecf0;
+
+    /* Semantic colors */
+    --error-color: #cf222e;
+    --error-bg: #ffebe9;
+    --error-border: rgba(255, 129, 130, 0.4);
+    --warning-bg: #fff8c5;
+    --warning-border: #d4a72c;
+    --success-color: #1a7f37;
+    --success-bg: #dafbe1;
+    --success-border: rgba(45, 164, 78, 0.4);
+    --info-bg: #ddf4ff;
+    --info-border: #54aeff;
+    --info-color: #0969da;
+
+    /* Focus */
+    --focus-color: #0969da;
+    --focus-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(27, 31, 36, 0.04);
+    --shadow-md: 0 3px 8px rgba(27, 31, 36, 0.06);
+    --shadow-lg: 0 8px 24px rgba(27, 31, 36, 0.08);
+
+    /* Spacing scale */
+    --sp-xs: 4px;
+    --sp-sm: 8px;
+    --sp-md: 16px;
+    --sp-lg: 24px;
+    --sp-xl: 32px;
+    --sp-2xl: 48px;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 150ms var(--ease-out);
+    --transition-normal: 250ms var(--ease-out);
+}
