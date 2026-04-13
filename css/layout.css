@@ -1,68 +1,98 @@
+/* ══════════════════════════════════════
+   Layout — Header, nav, footer, grid, dropdowns
+   ══════════════════════════════════════ */
+
 /* ── Header ── */
 
 header {
     background: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
-    padding: var(--sp-md) var(--sp-xl);
+    padding: var(--sp-sm) var(--sp-xl);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(8px);
-    background: rgba(255, 255, 255, 0.92);
 }
 
 #header-content {
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-
+    align-items: center;
+    gap: var(--sp-sm);
 }
 
 h1 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.01em;
     color: var(--text-color);
 }
 
-#user-info {
-    font-size: 13px;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: var(--sp-sm);
+/* ── App Grid ── */
+
+#app-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-areas: "nav main";
+    gap: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    align-items: start;
+    min-height: calc(100vh - 49px);
 }
 
+/* (repo info is now inside the left nav — no 3-column layout needed) */
 
+#app-layout > main {
+    grid-area: main;
+    min-width: 0;
+    padding: var(--sp-xl);
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#app-layout.centered-view {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+}
+
+#app-layout.centered-view > main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--sp-xl) var(--sp-lg);
+}
 
 /* ── Sidebar Navigation ── */
 
 #step-nav {
     grid-area: nav;
     position: sticky;
-    top: 57px;
+    top: 49px;
     align-self: start;
     background: var(--card-bg);
     border-right: 1px solid var(--border-color);
     padding: 0 0 var(--sp-sm) 0;
-    min-height: calc(100vh - 57px);
+    min-height: calc(100vh - 49px);
+    max-height: calc(100vh - 49px);
+    overflow-y: auto;
 }
 
 .nav-header {
     display: flex;
     align-items: center;
     gap: var(--sp-sm);
-    padding: var(--sp-md) var(--sp-md);
-    font-size: 13px;
+    padding: var(--sp-md);
+    font-size: 11px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     border-bottom: 1px solid var(--border-light);
 }
 
@@ -73,11 +103,11 @@ h1 {
 }
 
 #step-nav li {
-    padding: 12px var(--sp-md);
-    font-size: 14px;
+    padding: 10px var(--sp-md);
+    font-size: 13px;
     font-weight: 500;
-    color: #8c959f;
-    border-left: 3px solid transparent;
+    color: var(--text-tertiary);
+    border-left: 2px solid transparent;
     cursor: default;
     user-select: none;
     transition: background var(--transition-fast),
@@ -95,7 +125,7 @@ h1 {
 
 #step-nav li.nav-done::before {
     content: "✓";
-    font-size: 11px;
+    font-size: 10px;
     color: var(--primary-color);
     font-weight: 700;
     flex-shrink: 0;
@@ -115,7 +145,7 @@ h1 {
 
 #step-nav li.nav-has-errors::after {
     content: "⚠";
-    color: var(--error-color, #d1242f);
+    color: var(--error-color);
     font-size: 13px;
     margin-left: auto;
     flex-shrink: 0;
@@ -130,20 +160,17 @@ h1 {
 
 #step-nav li.nav-active::before {
     content: "";
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: var(--radius-full);
     background: var(--primary-color);
     flex-shrink: 0;
-    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 #step-nav li:focus-visible {
     outline: 2px solid var(--focus-color);
     outline-offset: -2px;
 }
-
-
 
 /* ── Footer ── */
 
@@ -163,242 +190,44 @@ h1 {
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
 }
 
 .footer-right a {
-    color: var(--primary-color);
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
 }
 
 .footer-right a:hover {
+    color: var(--primary-color);
     text-decoration: underline;
 }
 
+/* ── User Info & Avatar ── */
 
-
-/* ── Layout — CSS Grid Dashboard ── */
-
-#app-layout {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    grid-template-areas: "nav main";
-    gap: 0;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    width: 100%;
-    align-items: start;
-    min-height: calc(100vh - 57px);
-}
-
-#app-layout.has-sidebar {
-    grid-template-columns: 220px 1fr 260px;
-    grid-template-areas: "nav main sidebar";
-}
-
-#app-layout>main {
-    grid-area: main;
-    min-width: 0;
-    padding: var(--sp-xl) var(--sp-xl);
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#app-layout.centered-view {
-    grid-template-columns: 1fr;
-    grid-template-areas: "main";
-}
-
-#app-layout.centered-view>main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--sp-xl) var(--sp-lg);
-}
-
-
-
-/* ── Modal Header ── */
-
-.csv-modal-header {
+#user-info {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: var(--sp-sm);
-    padding: var(--sp-md) var(--sp-lg);
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-color);
-    flex-shrink: 0;
-}
-
-.csv-modal-header h2 {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text-color);
-}
-
-.csv-modal-badges {
-    display: flex;
-    gap: 6px;
-    margin-left: var(--sp-sm);
-}
-
-.csv-modal-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: var(--radius-full);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    line-height: 1.4;
-}
-
-.csv-modal-badge--error {
-    background: var(--error-bg);
-    color: var(--error-color);
-    border: 1px solid var(--error-color);
-}
-
-.csv-modal-badge--warning {
-    background: var(--warning-bg);
-    color: #6e5600;
-    border: 1px solid #9a6700;
-}
-
-.csv-modal-badge--success {
-    background: var(--success-bg);
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
-}
-
-.csv-modal-close {
-    margin-left: auto;
-    background: none;
-    border: none;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: var(--sp-xs);
-    border-radius: var(--radius-sm);
-    transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.csv-modal-close:hover,
-.csv-modal-close:focus-visible {
-    color: var(--text-color);
-    background: var(--bg-color);
-}
-
-
-/* ── Modal Footer ── */
-
-.csv-modal-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-md);
-    padding: var(--sp-md) var(--sp-lg);
-    border-top: 1px solid var(--border-color);
-    background: var(--bg-color);
-    flex-shrink: 0;
-}
-
-.csv-modal-footer-summary {
     font-size: 13px;
-    line-height: 1.4;
-}
-
-.csv-modal-footer-error {
-    color: var(--error-color);
-    font-weight: 600;
-}
-
-.csv-modal-footer-warn {
-    color: #6e5600;
-    font-weight: 500;
-}
-
-.csv-modal-footer-ok {
-    color: var(--success-color);
-    font-weight: 600;
-}
-
-.csv-modal-footer-actions {
-    display: flex;
+    color: var(--text-secondary);
     gap: var(--sp-sm);
-    flex-shrink: 0;
 }
-
-.csv-modal-btn {
-    padding: 10px 20px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
-}
-
-.csv-modal-btn--primary {
-    background: var(--primary-color);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(27, 127, 55, 0.18);
-}
-
-.csv-modal-btn--primary:hover:not(:disabled) {
-    background: var(--primary-hover);
-    box-shadow: 0 4px 14px rgba(27, 127, 55, 0.25);
-    transform: translateY(-1px);
-}
-
-.csv-modal-btn--primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.csv-modal-btn--warn {
-    background: #9a6700;
-    box-shadow: 0 2px 8px rgba(154, 103, 0, 0.18);
-}
-
-.csv-modal-btn--warn:hover {
-    background: #7d5300;
-    box-shadow: 0 4px 14px rgba(154, 103, 0, 0.25);
-}
-
-.csv-modal-btn--secondary {
-    background: var(--card-bg);
-    color: var(--text-color);
-    border-color: var(--border-color);
-}
-
-.csv-modal-btn--secondary:hover {
-    background: var(--bg-color);
-}
-
-
-/* ── Top Bar Avatar & Dropdown ── */
 
 .avatar-btn {
     appearance: none;
     background: transparent;
-    border: none;
+    border: 2px solid transparent;
     padding: 0;
     margin: 0;
     cursor: pointer;
     border-radius: var(--radius-full);
-    box-shadow: none;
+    transition: border-color var(--transition-fast);
 }
 
 .avatar-btn:hover {
-    box-shadow: 0 0 0 2px var(--primary-light);
-    transform: none;
+    border-color: var(--border-color);
 }
 
 .avatar-btn:focus-visible {
@@ -407,23 +236,18 @@ h1 {
 }
 
 .top-avatar {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: var(--radius-full);
-    border: 1px solid var(--border-color);
     object-fit: cover;
     display: block;
 }
 
-#user-info {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
+/* ── Dropdown ── */
 
 .user-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -432,7 +256,18 @@ h1 {
     width: 200px;
     z-index: 1000;
     overflow: hidden;
-    animation: fadeSlideIn 0.2s var(--ease-out) both;
+    animation: dropdownIn var(--transition-fast) var(--ease-out) both;
+}
+
+@keyframes dropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-header {
@@ -470,9 +305,11 @@ h1 {
     transform: none;
 }
 
+/* ── Logout Confirm ── */
+
 #logout-confirm {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -500,9 +337,382 @@ h1 {
     width: 100%;
 }
 
+.logout-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    font-size: 13px;
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    margin-left: var(--sp-sm);
+    animation: dropdownIn var(--transition-fast) var(--ease-out);
+}
 
-/* ── Enhanced Footer ── */
+.logout-confirm.hidden {
+    display: none !important;
+}
 
-#main-footer {
-    border-top: 2px solid var(--primary-color);
+/* ── CSV Modal Header ── */
+
+.csv-modal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    padding: var(--sp-md) var(--sp-lg);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-color);
+    flex-shrink: 0;
+}
+
+.csv-modal-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.csv-modal-badges {
+    display: flex;
+    gap: 6px;
+    margin-left: var(--sp-sm);
+}
+
+.csv-modal-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+}
+
+.csv-modal-badge--error {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-border);
+}
+
+.csv-modal-badge--warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid var(--warning-border);
+}
+
+.csv-modal-badge--success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-border);
+}
+
+.csv-modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    padding: var(--sp-xs);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.csv-modal-close:hover,
+.csv-modal-close:focus-visible {
+    color: var(--text-color);
+    background: var(--border-light);
+}
+
+/* ── CSV Modal Footer ── */
+
+.csv-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-md);
+    padding: var(--sp-md) var(--sp-lg);
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-color);
+    flex-shrink: 0;
+}
+
+.csv-modal-footer-summary {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.csv-modal-footer-error {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.csv-modal-footer-warn {
+    color: var(--warning-text);
+    font-weight: 500;
+}
+
+.csv-modal-footer-ok {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.csv-modal-footer-actions {
+    display: flex;
+    gap: var(--sp-sm);
+    flex-shrink: 0;
+}
+
+.csv-modal-btn {
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.csv-modal-btn--primary {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.csv-modal-btn--primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+.csv-modal-btn--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.csv-modal-btn--warn {
+    background: var(--warning-border);
+    color: #fff;
+}
+
+.csv-modal-btn--warn:hover {
+    background: var(--warning-text);
+}
+
+.csv-modal-btn--secondary {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.csv-modal-btn--secondary:hover {
+    background: var(--bg-color);
+}
+
+/* ── Repo Info Panel (collapsible, inside left nav) ── */
+
+.repo-sidebar-inline {
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-color);
+}
+
+.repo-sidebar-inline.hidden {
+    display: none !important;
+}
+
+.sidebar-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-xs);
+    padding: 10px var(--sp-md);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: background var(--transition-fast);
+}
+
+.sidebar-summary::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar-summary:hover {
+    background: var(--border-light);
+}
+
+.sidebar-summary-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.sidebar-summary-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+}
+
+.sidebar-chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    color: var(--text-tertiary);
+}
+
+.sidebar-chevron svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Open: show up arrow, hide down arrow */
+.repo-sidebar-inline[open] .sidebar-chevron-down {
+    display: none;
+}
+
+.repo-sidebar-inline[open] .sidebar-chevron-up {
+    display: block;
+}
+
+/* Collapsed: show down arrow, hide up arrow */
+.repo-sidebar-inline:not([open]) .sidebar-chevron-down {
+    display: block;
+}
+
+.repo-sidebar-inline:not([open]) .sidebar-chevron-up {
+    display: none;
+}
+
+.sidebar-header {
+    padding: var(--sp-md);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+}
+
+.sidebar-body {
+    padding: var(--sp-sm) var(--sp-md) var(--sp-md);
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: var(--sp-sm) 0;
+}
+
+.sidebar-section {
+    padding: var(--sp-xs) 0;
+}
+
+.sidebar-section-title {
+    margin: 0 0 var(--sp-xs);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+}
+
+.sidebar-repo-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-color);
+    word-break: break-all;
+    line-height: 1.3;
+}
+
+.sidebar-repo-link {
+    display: inline-block;
+    font-size: 13px;
+    margin-top: var(--sp-xs);
+}
+
+.sidebar-repo-link.hidden {
+    display: none !important;
+}
+
+.sidebar-fork-source {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: var(--sp-xs);
+}
+
+.sidebar-fork-source.hidden {
+    display: none !important;
+}
+
+.sidebar-meta {
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 3px 0;
+    gap: var(--sp-sm);
+}
+
+.sidebar-meta-item dt {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.sidebar-meta-value {
+    font-size: 12px;
+    color: var(--text-color);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 110px;
+}
+
+.sidebar-pages-status {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.sidebar-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.sidebar-status-dot--unknown {
+    background: var(--border-color);
+}
+
+.sidebar-status-dot--active {
+    background: var(--success-color);
+}
+
+.sidebar-status-dot--inactive {
+    background: var(--error-color);
+}
+
+.sidebar-pages-status a {
+    color: var(--primary-color);
+    font-weight: 500;
 }

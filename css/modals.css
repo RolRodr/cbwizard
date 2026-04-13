@@ -1,23 +1,6 @@
-/* ── Logout Confirmation ── */
-
-.logout-confirm {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-sm);
-    font-size: 13px;
-    background: var(--warning-bg);
-    border: 1px solid var(--warning-border);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    margin-left: var(--sp-sm);
-    animation: fadeSlideIn 0.2s var(--ease-out);
-}
-
-.logout-confirm.hidden {
-    display: none !important;
-}
-
-
+/* ══════════════════════════════════════
+   Modals — CSV editor, about, preview
+   ══════════════════════════════════════ */
 
 /* ── CSV Validation Modal ── */
 
@@ -28,24 +11,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(27, 31, 36, 0.55);
+    background: rgba(15, 23, 42, 0.5);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    animation: csvModalFadeIn var(--transition-fast) ease;
+    animation: modalFadeIn var(--transition-fast) ease;
 }
 
 .csv-modal-overlay.hidden {
     display: none !important;
 }
 
-@keyframes csvModalFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .csv-modal-panel {
@@ -54,29 +32,27 @@
     flex-direction: column;
     background: var(--card-bg);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    max-width: 98vw;
-    width: 1500px;
-    max-height: 95vh;
-    height: 95vh;
+    box-shadow: var(--shadow-xl);
+    max-width: 96vw;
+    width: 1200px;
+    max-height: 92vh;
+    height: 92vh;
     overflow: hidden;
-    animation: csvModalSlideUp 250ms var(--ease-out);
+    animation: modalSlideUp 250ms var(--ease-out);
 }
 
-@keyframes csvModalSlideUp {
+@keyframes modalSlideUp {
     from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(12px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-
-/* ── Modal Body (scrollable table area) ── */
+/* ── Modal Body ── */
 
 .csv-modal-body {
     flex: 1 1 auto;
@@ -89,14 +65,12 @@
     overflow-x: auto;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-sm);
 }
 
-/* Row number column */
 .csv-modal-row-num {
     text-align: center;
-    color: var(--text-secondary);
-    font-size: 11px;
+    color: var(--text-tertiary);
+    font-size: 12px;
     font-weight: 600;
     min-width: 36px;
     max-width: 44px;
@@ -105,7 +79,6 @@
     border-right: 1px solid var(--border-color);
 }
 
-/* Editable cells */
 .csv-modal-table td[contenteditable] {
     min-width: 80px;
     outline: none;
@@ -115,20 +88,102 @@
 
 .csv-modal-table td[contenteditable]:focus {
     box-shadow: inset 0 0 0 2px var(--primary-color);
-    background: #f0f7ff;
+    background: var(--info-bg);
     z-index: 1;
     position: relative;
 }
 
+/* ── Top Panel (tabs + content) ── */
 
-/* ── CSV Modal Issues List ── */
+.csv-modal-top-panel {
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.csv-modal-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 var(--sp-lg);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-color);
+}
+
+.csv-modal-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.csv-modal-tab:hover {
+    color: var(--text-color);
+}
+
+.csv-modal-tab--active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.csv-modal-tab-content.hidden {
+    display: none;
+}
+
+/* ── Issues Panel ── */
 
 .csv-modal-issues {
     padding: var(--sp-sm) var(--sp-lg);
-    border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
     max-height: 200px;
     overflow-y: auto;
+}
+
+/* ── Field Reference Panel ── */
+
+.csv-modal-reference {
+    padding: var(--sp-sm) var(--sp-lg);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.csv-modal-reference-inner h4 {
+    margin: 8px 0 4px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.csv-modal-reference-inner h4:first-child {
+    margin-top: 0;
+}
+
+.csv-modal-ref-table {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+}
+
+.csv-modal-reference-inner ul {
+    margin: 0 0 10px;
+    padding-left: 20px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.csv-modal-reference-inner li {
+    margin-bottom: 2px;
+}
+
+.csv-modal-ref-link {
+    margin: 6px 0 0;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
 }
 
 .csv-modal-issues-group {
@@ -139,12 +194,12 @@
 
 .csv-modal-issues-group--error {
     background: var(--error-bg);
-    border: 1px solid var(--error-color);
+    border: 1px solid var(--error-border);
 }
 
 .csv-modal-issues-group--warning {
     background: var(--warning-bg);
-    border: 1px solid #9a6700;
+    border: 1px solid var(--warning-border);
 }
 
 .csv-modal-issues-group h4 {
@@ -158,7 +213,7 @@
 }
 
 .csv-modal-issues-group--warning h4 {
-    color: #6e5600;
+    color: var(--warning-text);
 }
 
 .csv-modal-issues-group ul {
@@ -180,7 +235,6 @@
     padding: var(--sp-sm) 0;
 }
 
-
 /* ── About Modal ── */
 
 .about-modal-overlay {
@@ -190,49 +244,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(27, 31, 36, 0.5);
+    background: rgba(15, 23, 42, 0.5);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    animation: aboutFadeIn var(--transition-fast) ease;
+    animation: modalFadeIn var(--transition-fast) ease;
 }
 
 .about-modal-overlay.hidden {
     display: none !important;
 }
 
-@keyframes aboutFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 .about-modal-content {
     position: relative;
     background: var(--card-bg);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     max-width: 600px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
     padding: var(--sp-xl) var(--sp-xl) var(--sp-lg);
-    animation: aboutSlideUp 250ms var(--ease-out);
-}
-
-@keyframes aboutSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    animation: modalSlideUp 250ms var(--ease-out);
 }
 
 .about-modal-close {
@@ -241,10 +273,10 @@
     right: var(--sp-md);
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     padding: var(--sp-xs);
     border-radius: var(--radius-sm);
     transition: color var(--transition-fast), background var(--transition-fast);
@@ -253,12 +285,12 @@
 .about-modal-close:hover,
 .about-modal-close:focus-visible {
     color: var(--text-color);
-    background: var(--bg-color);
+    background: var(--border-light);
 }
 
 #about-modal-title {
     margin: 0 0 var(--sp-md);
-    font-size: 1.35rem;
+    font-size: 1.25rem;
 }
 
 .about-modal-body {
@@ -271,20 +303,19 @@
     margin: 0 0 var(--sp-md);
 }
 
-/* ── CSV Data Preview Modal ── */
+/* ── CSV Preview Modal ── */
 
 #csv-preview-overlay {
     position: fixed;
     inset: 0;
     z-index: 10001;
-    /* Ensure it stays above everything */
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(27, 31, 36, 0.55);
+    background: rgba(15, 23, 42, 0.5);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    animation: csvModalFadeIn var(--transition-fast) ease;
+    animation: modalFadeIn var(--transition-fast) ease;
 }
 
 #csv-preview-overlay.hidden {
@@ -297,12 +328,12 @@
     flex-direction: column;
     background: var(--card-bg);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     max-width: 95vw;
     width: 1200px;
     height: 85vh;
     overflow: hidden;
-    animation: csvModalSlideUp 250ms var(--ease-out);
+    animation: modalSlideUp 250ms var(--ease-out);
 }
 
 .csv-preview-modal-content .modal-header {
@@ -315,22 +346,25 @@
 
 .csv-preview-modal-content .modal-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 }
 
 .csv-preview-modal-content .modal-close {
     background: none;
     border: none;
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     line-height: 1;
     padding: 0 8px;
     transition: color var(--transition-fast);
 }
 
-.csv-preview-modal-content .modal-close:hover {
-    color: var(--error-color);
+.csv-preview-modal-content .modal-close:hover,
+.csv-preview-modal-content .modal-close:focus-visible {
+    color: var(--text-color);
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
 }
 
 #csv-preview-table-container {
@@ -355,7 +389,7 @@
 }
 
 #csv-preview-table-container th {
-    background-color: #f1f5f9;
+    background-color: var(--bg-color);
     font-weight: 600;
     position: sticky;
     top: 0;
@@ -365,7 +399,7 @@
 /* ── Inline CSV Preview (Step 3) ── */
 
 .csv-inline-preview {
-    margin-top: 16px;
+    margin-top: var(--sp-md);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     overflow: hidden;
@@ -413,6 +447,19 @@
     max-width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.csv-inline-preview-table-wrap td.cell-expanded {
+    white-space: normal;
+    max-width: none;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    background: var(--info-bg, #f0f7ff);
+    box-shadow: inset 0 0 0 2px var(--primary-color, #4a90d9);
+    position: relative;
+    z-index: 1;
 }
 
 .csv-inline-preview-hint {
