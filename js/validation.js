@@ -13,6 +13,16 @@ export function validateCSV(rows) {
     // Track uniqueness
     const objectIds = new Set();
 
+    // First pass: collect objectids and their display_templates for compound object validation
+    const objectIdTemplates = new Map(); // objectid -> display_template
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length === 0 || (row.length === 1 && !row[0])) continue;
+        const oid = colMap['objectid'] !== undefined ? (row[colMap['objectid']] || '').trim() : '';
+        const tmpl = colMap['display_template'] !== undefined ? (row[colMap['display_template']] || '').trim() : '';
+        if (oid) objectIdTemplates.set(oid, tmpl);
+    }
+
     // Iterate data rows (skipping header)
     for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
@@ -30,10 +40,13 @@ export function validateCSV(rows) {
         const formatVal = validateFormat(row, i, colMap, report);
 
         // 3. title
-        validateTitle(row, i, colMap, report);
+        validateTitle(row, i, colMap, report, objectIdTemplates);
 
         // 4. filename
         validateFilename(row, i, colMap, report, formatVal);
+
+        // --- Compound Object Checks ---
+        validateCompoundObject(row, i, colMap, report, formatVal, objectIdTemplates);
 
         // --- Visualization Fields (Yellow if missing/invalid) ---
 
@@ -104,7 +117,7 @@ function validateFormat(row, rowIndex, colMap, report) {
 }
 
 /** Validates that the title field is present. */
-function validateTitle(row, rowIndex, colMap, report) {
+function validateTitle(row, rowIndex, colMap, report, objectIdTemplates) {
     const idx = colMap['title'];
     if (idx === undefined) return;
 
@@ -112,6 +125,11 @@ function validateTitle(row, rowIndex, colMap, report) {
     const key = `${rowIndex},${idx}`;
 
     if (!val) {
+        // Children of "multiple" parents don't require a title
+        const parentidIdx = colMap['parentid'];
+        const parentidVal = parentidIdx !== undefined ? (row[parentidIdx] || '').trim() : '';
+        if (parentidVal && objectIdTemplates.get(parentidVal) === 'multiple') return;
+
         report.set(key, { type: 'error', msg: 'Missing required title.' });
     }
 }
@@ -124,16 +142,62 @@ function validateFilename(row, rowIndex, colMap, report, formatVal) {
     const val = (row[idx] || '').trim();
     const key = `${rowIndex},${idx}`;
 
+    // Compound parents don't need a filename — their children provide the media
+    const displayTemplateIdx = colMap['display_template'];
+    const templateVal = displayTemplateIdx !== undefined ? (row[displayTemplateIdx] || '').trim() : '';
+    const isCompoundParent = templateVal === 'compound_object' || templateVal === 'multiple';
+
     if (!val) {
-        // Filename is recommended but not required; missing is a warning not an error
-        if (formatVal !== 'record') {
+        if (!isCompoundParent && formatVal !== 'record') {
             report.set(key, { type: 'warning', msg: 'Missing filename (recommended for non-record items).' });
         }
     } else {
         if (val.startsWith('http://')) {
             report.set(key, { type: 'error', msg: 'Insecure URL. Must use HTTPS.' });
         }
-        // Could check extension vs format, but that's complex (e.g. image/jpeg vs .jpg/.jpeg)
+    }
+}
+
+/** Validates compound object and multiple parent/child relationships. */
+function validateCompoundObject(row, rowIndex, colMap, report, formatVal, objectIdTemplates) {
+    const parentidIdx = colMap['parentid'];
+    const displayTemplateIdx = colMap['display_template'];
+    const templateVal = displayTemplateIdx !== undefined ? (row[displayTemplateIdx] || '').trim() : '';
+    const isCompoundParent = templateVal === 'compound_object' || templateVal === 'multiple';
+    const parentidVal = parentidIdx !== undefined ? (row[parentidIdx] || '').trim() : '';
+
+    // --- Parent validation ---
+    if (isCompoundParent) {
+        // Parents must NOT have a parentid
+        if (parentidVal) {
+            const key = `${rowIndex},${parentidIdx}`;
+            report.set(key, { type: 'error', msg: 'Compound parent must have an empty parentid.' });
+        }
+    }
+
+    // --- Child validation (rows that have a parentid) ---
+    if (parentidVal) {
+        const parentTemplate = objectIdTemplates.get(parentidVal);
+
+        if (parentTemplate === undefined) {
+            // parentid doesn't match any objectid
+            const key = `${rowIndex},${parentidIdx}`;
+            report.set(key, { type: 'error', msg: `parentid "${parentidVal}" does not match any objectid in the CSV.` });
+        } else if (parentTemplate !== 'compound_object' && parentTemplate !== 'multiple') {
+            // parentid points to a non-compound row
+            const key = `${rowIndex},${parentidIdx}`;
+            report.set(key, { type: 'error', msg: `parentid "${parentidVal}" references an item that is not a compound_object or multiple (check display_template).` });
+        } else if (parentTemplate === 'multiple') {
+            // Children of "multiple" parents should be images
+            const formatIdx = colMap['format'];
+            if (formatIdx !== undefined) {
+                const childFormat = (row[formatIdx] || '').trim();
+                if (childFormat && !/^image\//i.test(childFormat)) {
+                    const key = `${rowIndex},${formatIdx}`;
+                    report.set(key, { type: 'error', msg: 'Children of a "multiple" parent must have an image format (e.g. image/jpeg).' });
+                }
+            }
+        }
     }
 }
 

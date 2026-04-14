@@ -153,13 +153,16 @@
     </div>
 
     <div id="step-3-upload-view" class="hidden">
-        <button id="back-to-info-btn" class="secondary" style="margin-bottom: 16px;" type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to
-            Information</button>
-        <p class="step-subtitle" style="margin-top: 8px;">Uploading your CSV</p>
-        <p>Select how you would like to provide your CSV metadata.</p>
-
+        <div style="display: flex; align-items: center; gap: var(--sp-sm); margin-bottom: 16px;">
+            <button id="back-to-info-btn" class="secondary" type="button"><i data-lucide="arrow-left" class="lucide-inline" aria-hidden="true"></i> Back to
+                Information</button>
+            <button id="csv-change-source-btn" class="secondary hidden" type="button"><i data-lucide="repeat" class="lucide-inline" aria-hidden="true"></i> Change metadata source</button>
+        </div>
         <!-- Choice Menu for Uploading CSV -->
-        <div id="csv-upload-choices-container" class="options-grid">
+        <div id="csv-upload-choices-container">
+            <p class="step-subtitle" style="margin-top: 8px;">Select a metadata source</p>
+            <p>Choose how you would like to provide your CSV metadata.</p>
+            <div class="options-grid">
             <button id="choice-upload-csv" class="option-card" type="button">
                 <div class="option-icon option-icon--csv" aria-hidden="true"><i data-lucide="folder-open"></i></div>
                 <h3>Upload CSV</h3>
@@ -175,6 +178,7 @@
                 <h3>Choose from Repo</h3>
                 <p>Select an existing CSV from your repository's _data/ directory.</p>
             </button>
+            </div>
         </div>
 
         <!-- Target Forms -->

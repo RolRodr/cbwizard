@@ -75,6 +75,24 @@ export async function saveState() {
     localStorage.setItem('gh_wizard_is_existing', STATE.isExistingRepo);
 }
 
+/** Clears CSV and media data from IndexedDB and STATE (used when changing repository). */
+export async function clearCsvAndMedia() {
+    // Remove all file records from IndexedDB
+    await new Promise((resolve, reject) => {
+        const tx = db.transaction([STORE_FILES], 'readwrite');
+        tx.objectStore(STORE_FILES).clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(e.target.error);
+    });
+
+    // Reset STATE
+    STATE.csvFile = null;
+    STATE.googleSheetUrl = null;
+    STATE.csvUploadedToRepo = false;
+    STATE.mediaFiles = [];
+    STATE.generateDerivatives = false;
+}
+
 /** Clears all persisted state from localStorage and IndexedDB, resets STATE. */
 export function clearState() {
     localStorage.clear();
