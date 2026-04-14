@@ -1,6 +1,6 @@
 import { STATE } from '../constants.js';
 import { ELEMENTS } from '../elements.js';
-import { saveState } from '../storage.js';
+import { saveState, clearCsvAndMedia } from '../storage.js';
 import { githubRequest } from '../api.js';
 import { updateUI, showError } from '../ui.js';
 import { showWizardLoading, hideWizardLoading } from '../loading.js';
@@ -128,10 +128,14 @@ export function registerForkListeners() {
     });
 
     if (ELEMENTS.changeRepoBtn) {
-        ELEMENTS.changeRepoBtn.addEventListener('click', () => {
+        ELEMENTS.changeRepoBtn.addEventListener('click', async () => {
+            // Clear CSV and media data from IndexedDB and STATE
+            await clearCsvAndMedia();
+
             // Reset repository selection
             STATE.targetRepo = null;
             STATE.isExistingRepo = false;
+            STATE.maxStep = 2;
             localStorage.removeItem('gh_wizard_target');
             localStorage.removeItem('gh_wizard_is_existing');
 
@@ -140,6 +144,8 @@ export function registerForkListeners() {
             if (ELEMENTS.repoFileTreeContainer) ELEMENTS.repoFileTreeContainer.classList.add('hidden');
             if (ELEMENTS.repoConfigContainer) ELEMENTS.repoConfigContainer.classList.add('hidden');
             if (ELEMENTS.repoChoicesContainer) ELEMENTS.repoChoicesContainer.classList.remove('hidden');
+
+            updateUI();
         });
     }
 }
