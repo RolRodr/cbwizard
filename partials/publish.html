@@ -1,14 +1,19 @@
 <section id="publish-section" class="wizard-step hidden">
-    <h2>Configure &amp; Publish</h2>
-    <p class="step-subtitle">Set your site settings and publish everything to GitHub.</p>
+    <h2>Configure</h2>
+    <p class="step-subtitle">Set your site settings before publishing.</p>
 
     <div id="config-section" style="margin-bottom: 24px;">
-        <p>Configure your site settings below, then publish everything to GitHub. This will update your site
-            configuration and enable GitHub Pages.</p>
+        <p>Configure your site settings below. These will be written to your repository's <code>_config.yml</code> when
+            you publish.</p>
 
         <label for="config-title">Site Title:</label>
         <input type="text" id="config-title" placeholder="My Digital Collection" aria-describedby="config-title-hint">
         <p id="config-title-hint" class="field-hint">The name displayed in the header of your site.</p>
+
+        <label for="config-author">Author:</label>
+        <input type="text" id="config-author" placeholder="Your name or organization"
+            aria-describedby="config-author-hint">
+        <p id="config-author-hint" class="field-hint">The author name displayed in site metadata.</p>
 
         <label for="config-tagline">Tagline (optional):</label>
         <input type="text" id="config-tagline" placeholder="A short description of your collection"
@@ -42,6 +47,18 @@
                 </select>
                 <div id="featured-image-preview" class="featured-image-preview hidden"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- CSV Collection Summary -->
+    <div id="csv-collection-summary" class="collection-summary hidden">
+        <h3>Collection Summary</h3>
+        <div class="collection-summary-content">
+            <div class="collection-total">
+                <span class="collection-total-number" id="csv-total-items">0</span>
+                <span class="collection-total-label">items in metadata</span>
+            </div>
+            <div id="csv-format-breakdown" class="format-breakdown"></div>
         </div>
     </div>
 

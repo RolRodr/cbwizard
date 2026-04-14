@@ -94,19 +94,27 @@ async function loadState() {
         console.warn("Failed to restore files from DB:", e);
     }
 
-    // Determine step based on progress
+    // Determine the furthest step based on progress
+    let computedStep = STATE.currentStep;
     if (STATE.targetRepo) {
-        // If user already published, go straight to success (Step 6)
         if (localStorage.getItem('gh_wizard_published') === 'true') {
-            STATE.currentStep = 6;
+            computedStep = 6;
         } else if (STATE.csvFile) {
-            STATE.currentStep = STATE.mediaFiles.length > 0 ? 5 : 4;
+            computedStep = STATE.mediaFiles.length > 0 ? 5 : 4;
         } else {
-            STATE.currentStep = 3;
+            computedStep = 3;
         }
     }
 
-    STATE.maxStep = Math.max(STATE.currentStep, STATE.maxStep);
+    STATE.maxStep = Math.max(computedStep, STATE.maxStep);
+
+    // Restore the user's last-viewed step (clamped to their max progress)
+    const savedStep = localStorage.getItem('gh_wizard_current_step');
+    if (savedStep !== null) {
+        STATE.currentStep = Math.min(parseInt(savedStep, 10), STATE.maxStep);
+    } else {
+        STATE.currentStep = computedStep;
+    }
 }
 
 // ── Global CSV Preview Modal ──

@@ -6,6 +6,7 @@ import { loadRepoCsvPicker } from './hooks/useCsvUpload.js';
 import { validateMediaFilenames, validateCSV } from './validation.js';
 import { renderCSVTable, parseCSV } from './utils/csv.js';
 import { getRepoContents, getGitHubPages } from './api.js';
+import { prepareConfigStep } from './hooks/useConfigStep.js';
 
 
 /** Renders a repository's top-level file structure into the file tree container. */
@@ -274,6 +275,9 @@ let _skipTransition = true;
 
 /** Updates the entire UI to reflect the current wizard step and app state. */
 export function updateUI() {
+    // Persist the current step so refreshes return to the same view
+    localStorage.setItem('gh_wizard_current_step', STATE.currentStep);
+
     const steps = getSteps();
 
     if (_skipTransition || _transitioning) {
@@ -317,7 +321,9 @@ export function updateUI() {
     // Animate out the current step
     currentlyVisible.classList.add('step-exiting');
 
-    const onExitEnd = () => {
+    const onExitEnd = (e) => {
+        // Ignore bubbled animationend events from child elements
+        if (e && e.target !== currentlyVisible) return;
         currentlyVisible.removeEventListener('animationend', onExitEnd);
         currentlyVisible.classList.add('hidden');
         currentlyVisible.classList.remove('active', 'step-exiting');
@@ -328,12 +334,14 @@ export function updateUI() {
             nextStep.classList.remove('hidden');
             nextStep.classList.add('active', 'step-entering');
 
-            const onEnterEnd = () => {
+            const onEnterEnd = (e) => {
+                // Ignore bubbled animationend events from child elements
+                if (e && e.target !== nextStep) return;
                 nextStep.removeEventListener('animationend', onEnterEnd);
                 nextStep.classList.remove('step-entering');
                 _transitioning = false;
             };
-            nextStep.addEventListener('animationend', onEnterEnd, { once: true });
+            nextStep.addEventListener('animationend', onEnterEnd);
         } else {
             _transitioning = false;
         }
@@ -341,7 +349,7 @@ export function updateUI() {
         _finishTransition(steps);
     };
 
-    currentlyVisible.addEventListener('animationend', onExitEnd, { once: true });
+    currentlyVisible.addEventListener('animationend', onExitEnd);
 
     // Safety fallback in case animationend doesn't fire
     setTimeout(() => {
@@ -374,6 +382,11 @@ function _finishTransition(steps) {
 
     // Restore input values if available
     if (STATE.templateRepo) ELEMENTS.templateRepoInput.value = STATE.templateRepo;
+
+    // Prepare the Configure step whenever it becomes active
+    if (STATE.currentStep === 5) {
+        prepareConfigStep();
+    }
 
     restoreStepState();
     updateSidebarNav();
@@ -438,9 +451,31 @@ function restoreStepState() {
         }
     }
 
-    // Step 3: restore CSV status card on back-navigation
+    // Step 3: restore CSV state on back-navigation
     if (STATE.currentStep === 3) {
-        if (STATE.csvFile && STATE.csvFile.content) {
+        const hasCsv = STATE.csvFile && STATE.csvFile.content;
+        const hasGsLink = STATE.googleSheetUrl;
+
+        if (hasCsv || hasGsLink) {
+            // Skip info view and option cards — go straight to the data preview
+            ELEMENTS.step3InfoView.classList.add('hidden');
+            ELEMENTS.step3UploadView.classList.remove('hidden');
+            ELEMENTS.csvUploadChoicesContainer.classList.add('hidden');
+
+            // Hide the sub-source forms
+            const uploadCsvSection = document.getElementById('upload-csv-section');
+            const repoCsvPicker = document.getElementById('repo-csv-picker');
+            const googleSheetsSection = document.getElementById('google-sheets-section');
+            if (uploadCsvSection) uploadCsvSection.classList.add('hidden');
+            if (repoCsvPicker) repoCsvPicker.classList.add('hidden');
+            if (googleSheetsSection) googleSheetsSection.classList.add('hidden');
+
+            // Show "Change metadata source" button
+            const changeBtn = document.getElementById('csv-change-source-btn');
+            if (changeBtn) changeBtn.classList.remove('hidden');
+        }
+
+        if (hasCsv) {
             // CSV file mode — restore status card
             const filenameEl = document.getElementById('csv-status-filename');
             const badgeEl = document.getElementById('csv-status-badge');
@@ -483,7 +518,6 @@ function restoreStepState() {
             // Restore inline preview
             const inlinePreviewEl = document.getElementById('csv-inline-preview');
             const inlineTableEl = document.getElementById('csv-inline-preview-table');
-            const inlineBadgesEl = document.getElementById('csv-inline-preview-hints');
             if (inlinePreviewEl && inlineTableEl) {
                 const previewResult = renderCSVTable(STATE.csvFile.content, inlineTableEl, true);
                 const badgesEl2 = document.getElementById('csv-inline-preview-badges');
@@ -524,7 +558,7 @@ function restoreStepState() {
                 inlinePreviewEl.classList.remove('hidden');
             }
 
-        } else if (STATE.googleSheetUrl) {
+        } else if (hasGsLink) {
             // Link mode — restore link status card, hide CSV-mode elements
             const statusCard = document.getElementById('csv-status-card');
             const gsLinkStatus = document.getElementById('gs-link-status');
@@ -560,19 +594,19 @@ function updateSidebarNav() {
         ELEMENTS.stepNav.classList.add('hidden');
         if (ELEMENTS.appLayout) {
             ELEMENTS.appLayout.classList.add('centered-view');
-            ELEMENTS.appLayout.classList.remove('has-sidebar');
         }
         return;
     }
     ELEMENTS.stepNav.classList.remove('hidden');
     if (ELEMENTS.appLayout) ELEMENTS.appLayout.classList.remove('centered-view');
 
-    // Toggle right sidebar grid column
-    if (ELEMENTS.appLayout) {
-        if (STATE.targetRepo) {
-            ELEMENTS.appLayout.classList.add('has-sidebar');
+    // Hide the "Connect" nav item once the user is authenticated and past step 1
+    const connectNav = document.getElementById('nav-connect');
+    if (connectNav) {
+        if (STATE.maxStep > 1) {
+            connectNav.classList.add('hidden');
         } else {
-            ELEMENTS.appLayout.classList.remove('has-sidebar');
+            connectNav.classList.remove('hidden');
         }
     }
 
@@ -582,6 +616,9 @@ function updateSidebarNav() {
         item.removeAttribute('aria-current');
         item.removeAttribute('aria-disabled');
         item.removeAttribute('tabindex');
+
+        // Skip hidden items
+        if (item.classList.contains('hidden')) return;
 
         if (itemStep === currentStep) {
             item.classList.add('nav-active');
@@ -596,7 +633,7 @@ function updateSidebarNav() {
 }
 
 
-/** Populates the right repo sidebar with current state data. */
+/** Populates the repo info panel (inside left nav) with current state data. */
 let _sidebarConfigFetched = null; // tracks which repo config has been fetched
 
 function updateRepoSidebar() {
