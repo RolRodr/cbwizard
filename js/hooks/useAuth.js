@@ -50,11 +50,17 @@ export async function authenticate(token, isRestoring = false) {
             ELEMENTS.confirmUsername.textContent = `@${user.login}`;
             ELEMENTS.confirmBio.textContent = user.bio || '';
             ELEMENTS.confirmRepos.textContent = user.public_repos + (user.total_private_repos || 0);
-            // Re-trigger animations by cloning the inner reveal element
+            // Re-trigger animations by briefly removing and re-adding the animation classes
             const reveal = ELEMENTS.userConfirmation.querySelector('.user-confirm-reveal');
             if (reveal) {
-                const clone = reveal.cloneNode(true);
-                reveal.replaceWith(clone);
+                const animated = reveal.querySelectorAll(
+                    '.user-confirm-identity, .user-confirm-question, .user-confirm-action-btn'
+                );
+                animated.forEach(el => {
+                    el.style.animation = 'none';
+                    void el.offsetWidth; // force reflow
+                    el.style.animation = '';
+                });
             }
             ELEMENTS.userConfirmation.classList.remove('hidden');
         }
@@ -86,16 +92,19 @@ export function registerAuthListeners() {
         }
     });
 
-    ELEMENTS.confirmUserBtn.addEventListener('click', () => {
-        STATE.currentStep = 2;
-        updateUI();
-    });
-
-    ELEMENTS.cancelUserBtn.addEventListener('click', () => {
-        clearState();
-        ELEMENTS.userConfirmation.classList.add('hidden');
-        ELEMENTS.authForm.classList.remove('hidden');
-        ELEMENTS.tokenInput.value = '';
+    // Use event delegation on the stable #user-confirmation wrapper so that
+    // animation re-triggers (which previously used cloneNode) don't orphan listeners.
+    ELEMENTS.userConfirmation.addEventListener('click', (e) => {
+        if (e.target.closest('#confirm-user-btn')) {
+            STATE.currentStep = 2;
+            STATE.maxStep = Math.max(STATE.maxStep, 2);
+            updateUI();
+        } else if (e.target.closest('#cancel-user-btn')) {
+            clearState();
+            ELEMENTS.userConfirmation.classList.add('hidden');
+            ELEMENTS.authForm.classList.remove('hidden');
+            ELEMENTS.tokenInput.value = '';
+        }
     });
 
     const logoutConfirm = document.getElementById('logout-confirm');

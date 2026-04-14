@@ -230,6 +230,9 @@ export function registerCsvUploadListeners() {
         ELEMENTS.repoCsvPicker.classList.add('hidden');
         ELEMENTS.googleSheetsSection.classList.add('hidden');
         ELEMENTS.csvUploadChoicesContainer.classList.remove('hidden');
+        // Hide change-source button since choices are now visible
+        const changeBtn = document.getElementById('csv-change-source-btn');
+        if (changeBtn) changeBtn.classList.add('hidden');
         // Reset Google Sheets sub-flow
         const gsRouteChoice = document.getElementById('gs-route-choice');
         if (gsRouteChoice) gsRouteChoice.classList.add('hidden');
@@ -245,6 +248,9 @@ export function registerCsvUploadListeners() {
         ELEMENTS.repoCsvPicker.classList.add('hidden');
         ELEMENTS.googleSheetsSection.classList.add('hidden');
         ELEMENTS.csvUploadChoicesContainer.classList.add('hidden');
+        // Show "Change metadata source" button
+        const changeBtn = document.getElementById('csv-change-source-btn');
+        if (changeBtn) changeBtn.classList.remove('hidden');
     };
 
     if (ELEMENTS.choiceUploadCsv) {
@@ -263,6 +269,26 @@ export function registerCsvUploadListeners() {
     [ELEMENTS.backToUploadChoicesBtn1, ELEMENTS.backToUploadChoicesBtn2, ELEMENTS.backToUploadChoicesBtn3].forEach(btn => {
         if (btn) btn.addEventListener('click', backToUploadChoices);
     });
+
+    // ── "Change metadata source" — reveals option cards again ──
+    const changeSourceBtn = document.getElementById('csv-change-source-btn');
+    if (changeSourceBtn) {
+        changeSourceBtn.addEventListener('click', () => {
+            // Hide the current data controls/preview
+            ELEMENTS.csvUploadControls.classList.add('hidden');
+
+            // Show the option cards
+            ELEMENTS.csvUploadChoicesContainer.classList.remove('hidden');
+
+            // Hide sub-source forms
+            ELEMENTS.uploadCsvSection.classList.add('hidden');
+            ELEMENTS.repoCsvPicker.classList.add('hidden');
+            ELEMENTS.googleSheetsSection.classList.add('hidden');
+
+            // Hide change button itself (it reappears after a new source is loaded)
+            changeSourceBtn.classList.add('hidden');
+        });
+    }
 
     // ── Google Sheets Fetch ──
     let _gsPendingRawContent = null;

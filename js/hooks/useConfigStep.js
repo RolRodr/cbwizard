@@ -1,6 +1,7 @@
 import { STATE } from '../constants.js';
 import { ELEMENTS } from '../elements.js';
 import { parseCSV } from '../utils/csv.js';
+import { getRepoContents } from '../api.js';
 
 // ─────── Step 5: Config Form ───────
 
@@ -142,6 +143,122 @@ function updateFeaturedImagePreview() {
     }
 }
 
+/** Populates the collection summary section with total item count and format breakdown. */
+function populateCollectionSummary() {
+    const summaryEl = ELEMENTS.csvCollectionSummary;
+    const totalEl = ELEMENTS.csvTotalItems;
+    const breakdownEl = ELEMENTS.csvFormatBreakdown;
+    if (!summaryEl || !totalEl || !breakdownEl) return;
+
+    // Resolve CSV content
+    let csvContent = STATE.csvFile?.content || null;
+    if (!csvContent) {
+        summaryEl.classList.add('hidden');
+        return;
+    }
+
+    const rows = parseCSV(csvContent);
+    if (rows.length < 2) {
+        summaryEl.classList.add('hidden');
+        return;
+    }
+
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const formatIdx = header.indexOf('format');
+    const dataRows = rows.slice(1).filter(row => row.some(cell => cell.trim()));
+
+    totalEl.textContent = dataRows.length;
+
+    // Build format breakdown
+    breakdownEl.innerHTML = '';
+    if (formatIdx !== -1) {
+        const formatCounts = {};
+        dataRows.forEach(row => {
+            const format = (row[formatIdx] || '').trim() || 'Unknown';
+            formatCounts[format] = (formatCounts[format] || 0) + 1;
+        });
+
+        // Sort by count descending
+        const sorted = Object.entries(formatCounts).sort((a, b) => b[1] - a[1]);
+        sorted.forEach(([format, count]) => {
+            const item = document.createElement('div');
+            item.className = 'format-breakdown-item';
+
+            const label = document.createElement('span');
+            label.className = 'format-breakdown-label';
+            label.textContent = format;
+
+            const countEl = document.createElement('span');
+            countEl.className = 'format-breakdown-count';
+            countEl.textContent = count;
+
+            const bar = document.createElement('div');
+            bar.className = 'format-breakdown-bar';
+            const fill = document.createElement('div');
+            fill.className = 'format-breakdown-fill';
+            fill.style.width = `${(count / dataRows.length) * 100}%`;
+            bar.appendChild(fill);
+
+            item.appendChild(label);
+            item.appendChild(countEl);
+            item.appendChild(bar);
+            breakdownEl.appendChild(item);
+        });
+    }
+
+    summaryEl.classList.remove('hidden');
+}
+
+/** Extracts a simple YAML value by key from a string. */
+function extractYamlValue(content, key) {
+    const regex = new RegExp(`^${key}:\\s*(.*)`, 'm');
+    const match = content.match(regex);
+    if (!match) return '';
+    let val = match[1].trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+    }
+    return val;
+}
+
+/** Fetches _config.yml from the repo and pre-fills empty config fields. */
+async function populateFieldsFromConfig() {
+    const [owner, repoName] = STATE.targetRepo.split('/');
+    if (!owner || !repoName) return;
+
+    try {
+        const fileData = await getRepoContents(owner, repoName, '_config.yml');
+        if (!fileData || !fileData.content) return;
+
+        const contentStr = decodeURIComponent(escape(atob(fileData.content)));
+
+        const fields = [
+            { key: 'title', el: ELEMENTS.configTitle },
+            { key: 'author', el: ELEMENTS.configAuthor },
+            { key: 'tagline', el: ELEMENTS.configTagline },
+            { key: 'description', el: ELEMENTS.configDescription },
+        ];
+
+        fields.forEach(({ key, el }) => {
+            if (el && !el.value) {
+                const val = extractYamlValue(contentStr, key);
+                if (val) el.value = val;
+            }
+        });
+
+        // Fallback: if title is still empty, derive from repo name
+        if (ELEMENTS.configTitle && !ELEMENTS.configTitle.value) {
+            ELEMENTS.configTitle.value = repoName.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+    } catch (e) {
+        // If fetch fails, fall back to repo name for title
+        if (ELEMENTS.configTitle && !ELEMENTS.configTitle.value) {
+            const repoName = STATE.targetRepo.split('/')[1] || '';
+            ELEMENTS.configTitle.value = repoName.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+    }
+}
+
 /** Prepares Step 5 by auto-populating config fields and the publish summary. */
 export async function prepareConfigStep() {
     const isGoogleSheetLink = !STATE.csvFile && !!STATE.googleSheetUrl;
@@ -174,14 +291,16 @@ export async function prepareConfigStep() {
         }
     }
 
-    // Auto-populate title from repo name if empty
-    if (ELEMENTS.configTitle && !ELEMENTS.configTitle.value && STATE.targetRepo) {
-        const repoName = STATE.targetRepo.split('/')[1] || '';
-        ELEMENTS.configTitle.value = repoName.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    // Pre-fill config fields from the repo's _config.yml (for existing repos)
+    if (STATE.targetRepo) {
+        await populateFieldsFromConfig();
     }
 
     // Populate featured image dropdown from CSV objectids (async — may fetch from Google Sheet)
     await populateFeaturedImageSelect();
+
+    // Populate collection summary with item count and format breakdown
+    populateCollectionSummary();
 
     // Listen for featured image selection changes to show preview
     if (ELEMENTS.configFeaturedImage) {

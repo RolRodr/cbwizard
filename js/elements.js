@@ -128,6 +128,7 @@ export const ELEMENTS = {
     get configTitle() { return document.getElementById('config-title'); },
     get configTagline() { return document.getElementById('config-tagline'); },
     get configDescription() { return document.getElementById('config-description'); },
+    get configAuthor() { return document.getElementById('config-author'); },
     get configMetadata() { return document.getElementById('config-metadata'); },
     get configFeaturedImage() { return document.getElementById('config-featured-image'); },
     get featuredImagePreview() { return document.getElementById('featured-image-preview'); },
@@ -135,6 +136,9 @@ export const ELEMENTS = {
     get publishProgressLabel() { return document.getElementById('publish-progress-label'); },
     get publishProgressFill() { return document.getElementById('publish-progress-fill'); },
     get publishSummaryList() { return document.getElementById('publish-summary-list'); },
+    get csvCollectionSummary() { return document.getElementById('csv-collection-summary'); },
+    get csvTotalItems() { return document.getElementById('csv-total-items'); },
+    get csvFormatBreakdown() { return document.getElementById('csv-format-breakdown'); },
 
     // Step 6: Published
     get publishLinks() { return document.getElementById('publish-links'); },

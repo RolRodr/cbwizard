@@ -38,6 +38,7 @@ async function updateConfigYml(owner, repoName) {
     const siteTitle = (ELEMENTS.configTitle && ELEMENTS.configTitle.value.trim()) || repoName;
     const tagline = (ELEMENTS.configTagline && ELEMENTS.configTagline.value.trim()) || '';
     const description = (ELEMENTS.configDescription && ELEMENTS.configDescription.value.trim()) || '';
+    const author = (ELEMENTS.configAuthor && ELEMENTS.configAuthor.value.trim()) || '';
 
     const metadataValue = STATE.csvFile
         ? STATE.csvFile.name.replace(/\.csv$/i, '')
@@ -47,6 +48,7 @@ async function updateConfigYml(owner, repoName) {
     lines = replaceYamlField(lines, 'title', siteTitle);
     if (tagline) lines = replaceYamlField(lines, 'tagline', tagline);
     if (description) lines = replaceYamlField(lines, 'description', description);
+    if (author) lines = replaceYamlField(lines, 'author', author);
     if (metadataValue) lines = replaceYamlField(lines, 'metadata', metadataValue);
 
     const updatedContent = lines.join('\n');

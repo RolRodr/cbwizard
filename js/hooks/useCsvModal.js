@@ -39,7 +39,64 @@ function buildModal() {
                 <div class="csv-modal-badges" id="csv-modal-badges"></div>
                 <button class="csv-modal-close" aria-label="Close">&times;</button>
             </div>
-            <div id="csv-modal-issues" class="csv-modal-issues"></div>
+            <div class="csv-modal-top-panel">
+                <div class="csv-modal-tabs" role="tablist">
+                    <button class="csv-modal-tab csv-modal-tab--active" role="tab" aria-selected="true" aria-controls="csv-modal-issues" data-tab="issues">
+                        <i data-lucide="alert-circle" aria-hidden="true" class="lucide-inline"></i> Issues
+                    </button>
+                    <button class="csv-modal-tab" role="tab" aria-selected="false" aria-controls="csv-modal-reference" data-tab="reference">
+                        <i data-lucide="book-open" aria-hidden="true" class="lucide-inline"></i> Field Reference
+                    </button>
+                </div>
+                <div id="csv-modal-issues" class="csv-modal-issues csv-modal-tab-content" role="tabpanel"></div>
+                <div id="csv-modal-reference" class="csv-modal-reference csv-modal-tab-content hidden" role="tabpanel">
+                    <div class="csv-modal-reference-inner">
+                        <h4>Required Fields</h4>
+                        <table class="demo-table csv-modal-ref-table">
+                            <thead><tr><th>Field</th><th>Description</th><th>Example</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>objectid</strong></td><td>Unique identifier. Lowercase, no spaces or special characters.</td><td><code>coll002</code></td></tr>
+                                <tr><td><strong>filename</strong></td><td>Object's filename with extension, or full HTTPS URL. Leave blank for YouTube/Vimeo.</td><td><code>letter001.pdf</code></td></tr>
+                                <tr><td><strong>title</strong></td><td>Short, descriptive name for the item.</td><td><code>Haystack Rock</code></td></tr>
+                                <tr><td><strong>format</strong></td><td>MIME type. Controls display. E.g. <code>image/jpeg</code>, <code>application/pdf</code>, <code>video/mp4</code>.</td><td><code>image/jpeg</code></td></tr>
+                            </tbody>
+                        </table>
+                        <h4>Fields Required for Visualizations</h4>
+                        <table class="demo-table csv-modal-ref-table">
+                            <thead><tr><th>Page</th><th>Required Fields</th></tr></thead>
+                            <tbody>
+                                <tr><td>Map</td><td><strong>latitude</strong> &amp; <strong>longitude</strong> — geographic coordinates</td></tr>
+                                <tr><td>Timeline</td><td><strong>date</strong> — format <code>yyyy-mm-dd</code>, <code>yyyy-mm</code>, or <code>yyyy</code></td></tr>
+                                <tr><td>Subjects</td><td><strong>subject</strong> — semicolon-separated topics</td></tr>
+                                <tr><td>Locations</td><td><strong>location</strong> — semicolon-separated place names</td></tr>
+                            </tbody>
+                        </table>
+                        <h4>Compound Objects</h4>
+                        <table class="demo-table csv-modal-ref-table">
+                            <thead><tr><th>Field</th><th>Description</th><th>Example</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>parentid</strong></td><td>Leave blank for standalone/parent items. For child items, set to the parent's <code>objectid</code>.</td><td><code>compound001</code></td></tr>
+                                <tr><td><strong>format</strong></td><td>Parent: <code>compound_object</code> (mixed media) or <code>multiple</code> (images only). Children: the media MIME type.</td><td><code>compound_object</code></td></tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Children of <code>multiple</code> parents must be images (e.g. <code>image/jpeg</code>). See <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/compound-objects/" target="_blank" rel="noopener noreferrer">Compound Objects docs</a>.</p>
+                        <h4>Optional (Recommended)</h4>
+                        <ul>
+                            <li><strong>youtubeid</strong> — YouTube video ID (only for YouTube items)</li>
+                            <li><strong>vimeoid</strong> — Vimeo video ID (only for Vimeo items)</li>
+                            <li><strong>creator</strong> — entity who made the resource; semicolon-separated</li>
+                            <li><strong>description</strong> — brief account of the item</li>
+                            <li><strong>source</strong> — related source collection</li>
+                            <li><strong>identifier</strong> — unique ID from the source collection</li>
+                            <li><strong>type</strong> — DCMI Type (e.g. <code>Image;StillImage</code>, <code>Text</code>)</li>
+                            <li><strong>language</strong> — ISO 639-2 code (e.g. <code>eng</code>)</li>
+                            <li><strong>rights</strong> — free-text rights statement</li>
+                            <li><strong>rightsstatement</strong> — standardized rights URI</li>
+                        </ul>
+                        <p class="csv-modal-ref-link">Full details: <a href="https://collectionbuilder.github.io/cb-docs/docs/metadata/gh_metadata/" target="_blank" rel="noopener noreferrer">CollectionBuilder Metadata Docs <i data-lucide="external-link" aria-hidden="true" class="lucide-inline"></i></a></p>
+                    </div>
+                </div>
+            </div>
             <div class="csv-modal-body">
                 <div class="csv-modal-table-wrap">
                     <table id="csv-modal-table" class="demo-table csv-modal-table"></table>
@@ -56,6 +113,7 @@ function buildModal() {
     `;
 
     document.body.appendChild(modalEl);
+    window.lucide?.createIcons();
 
     // ── Wire event listeners ──
 
@@ -81,6 +139,25 @@ function buildModal() {
         if (e.key === 'Escape' && modalEl && !modalEl.classList.contains('hidden')) {
             closeCsvModal();
         }
+    });
+
+    // Tab toggle (Issues / Field Reference)
+    modalEl.querySelectorAll('.csv-modal-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-tab');
+            modalEl.querySelectorAll('.csv-modal-tab').forEach(t => {
+                t.classList.remove('csv-modal-tab--active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('csv-modal-tab--active');
+            tab.setAttribute('aria-selected', 'true');
+
+            modalEl.querySelectorAll('.csv-modal-tab-content').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            const panelId = target === 'issues' ? 'csv-modal-issues' : 'csv-modal-reference';
+            document.getElementById(panelId).classList.remove('hidden');
+        });
     });
 }
 
